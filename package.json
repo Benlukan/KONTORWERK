@@ -1,6 +1,6 @@
 {
   "name": "kassenwerk",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "private": true,
   "description": "KASSENWERK – Kasse, Produkte & Lager für selbstgemachte Produkte",
   "scripts": {

@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.0.1 (Build 2) – 02.11.2026
+- Handy-Hochformat: Seite war breiter als der Bildschirm (Kategorie-Leiste) – 4. Spalte, Suche und „Mehr“ wurden abgeschnitten; behoben
+- Kompaktere Produktkacheln (Bild 4:3, kleinere Schrift), mehr Produkte auf einen Blick
+- Querformat: Warenkorb immer daneben, kompaktere Kopf- und Navigationsleiste
+- Android: Schriftgröße unabhängig von der System-Schriftgröße (Layout bleibt stabil)
+
 ## v1.0.0 (Build 1) – 02.11.2026
 - Erste Version
 - **Kasse:** Produktkacheln mit Foto/Emoji, Kategorie-Filter, Suche, Artikelnr./Barcode per Enter (auch Hand-Scanner)
