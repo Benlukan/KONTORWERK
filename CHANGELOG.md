@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.0.2 (Build 3) – 02.11.2026
+- Android: Flächen hinter Status- und Navigationsleiste in App-Farbe (vorher grau), Symbole hell/dunkel passend zum Design – auch bei manuellem Hell/Dunkel-Wechsel
+- Kopfzeile als Leiste (gleiche Farbe wie untere Navigation), Safe-Area-Abstände für randlose Darstellung
+
 ## v1.0.1 (Build 2) – 02.11.2026
 - Handy-Hochformat: Seite war breiter als der Bildschirm (Kategorie-Leiste) – 4. Spalte, Suche und „Mehr“ wurden abgeschnitten; behoben
 - Kompaktere Produktkacheln (Bild 4:3, kleinere Schrift), mehr Produkte auf einen Blick

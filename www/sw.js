@@ -1,5 +1,5 @@
 // KASSENWERK Service Worker – offline nutzbar (Web-Version)
-const CACHE = 'kassenwerk-v1.0.1-b2';
+const CACHE = 'kassenwerk-v1.0.2-b3';
 const FILES = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png', './apple-touch-icon.png',
   './fonts/inter-latin-400-normal.woff2', './fonts/inter-latin-500-normal.woff2', './fonts/inter-latin-600-normal.woff2', './fonts/inter-latin-700-normal.woff2', './fonts/inter-latin-800-normal.woff2'];
 self.addEventListener('install', e => { e.waitUntil(caches.open(CACHE).then(c => c.addAll(FILES))); self.skipWaiting(); });
