@@ -1,0 +1,24 @@
+{
+  "name": "kassenwerk",
+  "version": "1.0.0",
+  "private": true,
+  "description": "KASSENWERK – Kasse, Produkte & Lager für selbstgemachte Produkte",
+  "scripts": {
+    "sync": "cap sync",
+    "android": "cap sync android && cd android && ./gradlew assembleDebug",
+    "icons": "capacitor-assets generate --android --iconBackgroundColor '#0d1117' --iconBackgroundColorDark '#0d1117' --splashBackgroundColor '#f0f2f8' --splashBackgroundColorDark '#0d1117'"
+  },
+  "dependencies": {
+    "@capacitor/android": "^8.6.0",
+    "@capacitor/app": "^8.1.2",
+    "@capacitor/core": "^8.6.0",
+    "@capacitor/filesystem": "^8.1.4",
+    "@capacitor/haptics": "^8.0.2",
+    "@capacitor/share": "^8.0.3"
+  },
+  "devDependencies": {
+    "@capacitor/assets": "^3.0.5",
+    "@capacitor/cli": "^8.6.0",
+    "@fontsource/inter": "^5.2.0"
+  }
+}
