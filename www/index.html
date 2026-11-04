@@ -9,7 +9,7 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon-192.png">
 <script>
-const TOOL_CONFIG = { name: "KASSENWERK", version: "1.0.2", build: 3, emoji: "🧾", dbName: "kassenwerk", stateKey: "state_v1" };
+const TOOL_CONFIG = { name: "KASSENWERK", version: "1.0.3", build: 4, emoji: "🧾", dbName: "kassenwerk", stateKey: "state_v1" };
 </script>
 <style>
 @font-face{font-family:"Inter";font-weight:400;font-display:swap;src:url(fonts/inter-latin-400-normal.woff2) format("woff2")}
@@ -286,6 +286,19 @@ input,select,textarea{font-family:inherit;font-size:16px}
 .receipt .big{font-size:1rem;font-weight:800}
 .storno-stamp{display:inline-block;border:2px solid var(--danger);color:var(--danger);font-weight:800;padding:2px 10px;border-radius:6px;transform:rotate(-4deg);margin-bottom:6px}
 
+/* ─── BILD-VOLLANSICHT ─── */
+.lightbox{position:fixed;inset:0;z-index:300;background:#05080f;display:flex;flex-direction:column;opacity:0;pointer-events:none;transition:opacity .2s;touch-action:none}
+.lightbox.show{opacity:1;pointer-events:auto}
+.lb-head{position:relative;z-index:2;background:#05080f;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:calc(var(--safe-t) + 10px) 14px 10px;color:#fff}
+.lb-head b{font-size:.95rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lb-head button{width:40px;height:40px;border-radius:12px;border:none;background:rgba(255,255,255,.12);color:#fff;font-size:1.2rem;flex-shrink:0}
+.lb-stage{flex:1;overflow:hidden;display:grid;place-items:center;position:relative}
+.lb-stage img{max-width:100%;max-height:100%;object-fit:contain;transform-origin:0 0;will-change:transform;user-select:none;-webkit-user-drag:none}
+.lb-hint{position:relative;z-index:2;background:#05080f;text-align:center;color:rgba(255,255,255,.55);font-size:.75rem;padding:10px 10px calc(var(--safe-b) + 14px)}
+.img-prev.zoomable{cursor:zoom-in;position:relative}
+.img-prev.zoomable::after{content:'🔍';position:absolute;right:4px;bottom:4px;font-size:.7rem;background:rgba(0,0,0,.55);border-radius:6px;padding:1px 4px}
+.li-thumb.zoomable{cursor:zoom-in}
+
 /* ─── TOAST ─── */
 .toast{position:fixed;left:50%;bottom:calc(var(--nav-h) + var(--safe-b) + 84px);transform:translateX(-50%) translateY(20px);background:#1a1f36;color:#fff;padding:11px 18px;border-radius:12px;font-size:.85rem;font-weight:600;z-index:200;opacity:0;pointer-events:none;transition:all .25s;box-shadow:0 8px 24px rgba(0,0,0,.3);max-width:90vw;text-align:center}
 .toast.show{opacity:1;transform:translateX(-50%)}
@@ -450,6 +463,7 @@ input,select,textarea{font-family:inherit;font-size:16px}
 
 <div class="overlay" id="overlay"></div>
 <div class="modal" id="modal"><div class="modal-head"><h3 id="mTitle"></h3><button class="x-btn" id="mClose">✕</button></div><div class="modal-body" id="mBody"></div><div class="modal-foot" id="mFoot"></div></div>
+<div class="lightbox" id="lightbox"><div class="lb-head"><b id="lbTitle"></b><button id="lbClose">✕</button></div><div class="lb-stage" id="lbStage"><img id="lbImg" alt=""></div><div class="lb-hint">Doppeltippen oder mit zwei Fingern zoomen · Tippen schließt</div></div>
 <div class="toast" id="toast"></div>
 <div id="printArea"></div>
 
@@ -881,7 +895,7 @@ $$('#prodSeg button').forEach(b => b.onclick = () => { ui.prodSeg = b.dataset.se
 $('#prodSearch').oninput = e => { ui.prodQ = e.target.value; renderProducts(); };
 $('#prodFab').onclick = () => ui.prodSeg === 'p' ? editProduct() : editCategory();
 
-function thumb(p) { const c = catById(p.catId); return `<div class="li-thumb" style="background:${soft(p.color || (c && c.color) || '#009EB2')}">${p.img ? `<img src="${p.img}" alt="">` : esc(p.emoji || (c && c.emoji) || '📦')}</div>`; }
+function thumb(p) { const c = catById(p.catId); return `<div class="li-thumb ${p.img ? 'zoomable' : ''}" ${p.img ? `data-zoom="${p.id}"` : ''} style="background:${soft(p.color || (c && c.color) || '#009EB2')}">${p.img ? `<img src="${p.img}" alt="">` : esc(p.emoji || (c && c.emoji) || '📦')}</div>`; }
 function stockBadge(p) {
   const st = stockState(p);
   if (st === 'na') return `<span class="badge gray">∞</span>`;
@@ -901,7 +915,7 @@ function renderProducts() {
         <div class="li-main"><div class="li-title">${esc(p.name)}</div><div class="li-sub">${p.sku ? 'Nr. ' + esc(p.sku) + ' · ' : ''}${p.cost ? 'EK ' + eur(p.cost) + ' · ' : ''}${p.active ? '' : 'inaktiv'}</div></div>
         <div class="li-end"><b class="num">${eur(p.price)}</b>${stockBadge(p)}</div></button>`).join('')).join('')}</div>`
       : `<div class="card empty"><div>🔍</div><p>Keine Treffer.</p></div>`;
-    $$('#prodList .li').forEach(b => b.onclick = () => editProduct(b.dataset.id));
+    $$('#prodList .li').forEach(b => b.onclick = e => { const z = e.target.closest('[data-zoom]'); if (z) { const p = prodById(z.dataset.zoom); return openLightbox(p.imgFull || p.img, p.name); } editProduct(b.dataset.id); });
   } else {
     const cats = sortedCats();
     $('#catList').innerHTML = cats.length ? `<div class="list">${cats.map((c, i) => `<div class="li" style="cursor:default">
@@ -956,10 +970,68 @@ function resizeImage(file, max = 360) {
   });
 }
 
+function resizeFull(file, max = 1600) {
+  return new Promise((res, rej) => {
+    const fr = new FileReader();
+    fr.onload = () => { const img = new Image(); img.onload = () => {
+      const s = Math.min(1, max / Math.max(img.width, img.height)); const cv = document.createElement('canvas');
+      cv.width = Math.round(img.width * s); cv.height = Math.round(img.height * s);
+      cv.getContext('2d').drawImage(img, 0, 0, cv.width, cv.height);
+      res(cv.toDataURL('image/jpeg', .85));
+    }; img.onerror = rej; img.src = fr.result; };
+    fr.onerror = rej; fr.readAsDataURL(file);
+  });
+}
+
+/* ─── BILD-VOLLANSICHT (Lightbox mit Zoom) ─── */
+const LB = {s: 1, x: 0, y: 0, base: null};
+function lbApply() { $('#lbImg').style.transform = `translate(${LB.x}px,${LB.y}px) scale(${LB.s})`; }
+function lbReset() { LB.s = 1; LB.x = 0; LB.y = 0; lbApply(); }
+function openLightbox(src, title) {
+  if (!src) return;
+  $('#lbImg').src = src; $('#lbTitle').textContent = title || ''; lbReset();
+  $('#lightbox').classList.add('show');
+}
+function closeLightbox() { $('#lightbox').classList.remove('show'); }
+const lbOpen = () => $('#lightbox').classList.contains('show');
+$('#lbClose').onclick = closeLightbox;
+(function () {
+  const st = $('#lbStage'), im = $('#lbImg'); let t0 = null, lastTap = 0, moved = false;
+  const rel = (cx, cy) => { const r = im.getBoundingClientRect(); return [(cx - r.left) / LB.s, (cy - r.top) / LB.s]; };
+  // um Punkt (px,py) im Bild auf neuen Maßstab zoomen
+  const zoomAt = (cx, cy, ns) => {
+    ns = Math.max(1, Math.min(6, ns)); const r = im.getBoundingClientRect(); const ox = r.left - LB.x, oy = r.top - LB.y;
+    const ix = (cx - r.left) / LB.s, iy = (cy - r.top) / LB.s; LB.s = ns; LB.x = cx - ox - ix * ns; LB.y = cy - oy - iy * ns;
+    if (ns === 1) { LB.x = 0; LB.y = 0; } lbApply();
+  };
+  st.addEventListener('touchstart', e => {
+    moved = false;
+    if (e.touches.length === 2) { const [a, b] = e.touches; t0 = {d: Math.hypot(a.clientX - b.clientX, a.clientY - b.clientY), s: LB.s, cx: (a.clientX + b.clientX) / 2, cy: (a.clientY + b.clientY) / 2}; }
+    else if (e.touches.length === 1) t0 = {px: e.touches[0].clientX, py: e.touches[0].clientY, x: LB.x, y: LB.y};
+  }, {passive: true});
+  st.addEventListener('touchmove', e => {
+    if (!t0) return; moved = true;
+    if (e.touches.length === 2 && t0.d) { const [a, b] = e.touches; const d = Math.hypot(a.clientX - b.clientX, a.clientY - b.clientY); zoomAt(t0.cx, t0.cy, t0.s * d / t0.d); t0.s = LB.s; t0.d = d; }
+    else if (e.touches.length === 1 && LB.s > 1 && t0.px != null) { LB.x = t0.x + e.touches[0].clientX - t0.px; LB.y = t0.y + e.touches[0].clientY - t0.py; lbApply(); }
+  }, {passive: true});
+  st.addEventListener('touchend', e => {
+    if (e.touches.length) return; const wasMove = moved; t0 = null;
+    if (wasMove) return;
+    const now = Date.now(); const tp = e.changedTouches[0];
+    if (now - lastTap < 300) { zoomAt(tp.clientX, tp.clientY, LB.s > 1 ? 1 : 2.5); lastTap = 0; clearTimeout(st._t); }
+    else { lastTap = now; st._t = setTimeout(() => { if (LB.s === 1) closeLightbox(); }, 300); }
+  });
+  // Maus/PC
+  st.addEventListener('dblclick', e => zoomAt(e.clientX, e.clientY, LB.s > 1 ? 1 : 2.5));
+  st.addEventListener('wheel', e => { e.preventDefault(); zoomAt(e.clientX, e.clientY, LB.s * (e.deltaY < 0 ? 1.15 : 1 / 1.15)); }, {passive: false});
+  st.addEventListener('click', e => { if (e.pointerType === 'mouse' && e.target === st && LB.s === 1) closeLightbox(); });
+  void rel;
+})();
+
 function editProduct(id) {
   const isNew = !id;
   const p = id ? prodById(id) : {name: '', catId: ui.posCat !== 'all' ? ui.posCat : (sortedCats()[0] || {}).id || null, price: null, cost: null, stock: 0, minStock: S.settings.minDefault, sku: '', emoji: '', color: '', img: '', unit: 'Stk', active: true, trackStock: true, tax: S.settings.taxDefault};
-  let img = p.img || '', color = p.color || '';
+  let img = p.img || '', imgFull = p.imgFull || '', color = p.color || '';
   const cats = sortedCats();
   openModal(isNew ? 'Neues Produkt' : 'Produkt bearbeiten', `
     <div class="img-pick" style="margin-bottom:14px"><div class="img-prev" id="pImgPrev"></div>
@@ -979,7 +1051,8 @@ function editProduct(id) {
     <div class="switch"><div><b>Aktiv in der Kasse</b><small>Inaktive Produkte werden ausgeblendet</small></div><label class="toggle"><input type="checkbox" id="pActive" ${p.active ? 'checked' : ''}><span></span></label></div>
     ${!isNew && p.cost && p.price ? `<div class="info-box" style="margin-top:10px">Marge: <b>${eur(p.price - p.cost)}</b> (${Math.round((p.price - p.cost) / p.price * 100)} %)</div>` : ''}`,
     `${!isNew ? `<button class="btn btn-danger" id="pDel">Löschen</button><button class="btn" id="pDup">Duplizieren</button>` : ''}<button class="btn btn-primary" id="pOk">Speichern</button>`);
-  const prev = () => { const c = catById($('#pCat').value); $('#pImgPrev').style.background = soft(color || (c && c.color) || '#009EB2'); $('#pImgPrev').innerHTML = img ? `<img src="${img}" alt="">` : esc($('#pEmoji').value || (c && c.emoji) || '📦'); };
+  const prev = () => { const c = catById($('#pCat').value); $('#pImgPrev').style.background = soft(color || (c && c.color) || '#009EB2'); $('#pImgPrev').innerHTML = img ? `<img src="${img}" alt="">` : esc($('#pEmoji').value || (c && c.emoji) || '📦'); $('#pImgPrev').classList.toggle('zoomable', !!img); };
+  $('#pImgPrev').onclick = () => { if (img) openLightbox(imgFull || img, $('#pName').value.trim() || p.name); };
   prev();
   bindSwatches(v => { color = v; prev(); });
   $('#pEmoji').oninput = prev;
@@ -991,8 +1064,8 @@ function editProduct(id) {
     }
     prev();
   };
-  $('#pImg').onchange = async e => { const f = e.target.files[0]; if (!f) return; try { img = await resizeImage(f); prev(); } catch (err) { toast('Bild konnte nicht geladen werden', true); } };
-  $('#pImgDel').onclick = () => { img = ''; prev(); };
+  $('#pImg').onchange = async e => { const f = e.target.files[0]; if (!f) return; try { [img, imgFull] = await Promise.all([resizeImage(f), resizeFull(f)]); prev(); } catch (err) { toast('Bild konnte nicht geladen werden', true); } };
+  $('#pImgDel').onclick = () => { img = ''; imgFull = ''; prev(); };
   if (isNew) setTimeout(() => $('#pName').focus(), 250);
   $('#pOk').onclick = () => {
     const name = $('#pName').value.trim(), price = parseMoney($('#pPrice').value), costRaw = $('#pCost').value.trim(), cost = costRaw ? parseMoney(costRaw) : 0;
@@ -1000,7 +1073,7 @@ function editProduct(id) {
     if (isNaN(price) || price < 0) return toast('Bitte gültigen Preis eingeben', true);
     if (isNaN(cost) || cost < 0) return toast('Ungültiger Einkaufspreis', true);
     const stock = parseInt($('#pStock').value, 10) || 0, min = parseInt($('#pMin').value, 10);
-    const data = {name, price, cost, catId: $('#pCat').value || null, minStock: isNaN(min) ? S.settings.minDefault : min, unit: $('#pUnit').value, sku: $('#pSku').value.trim(), emoji: $('#pEmoji').value.trim(), color, img, tax: +$('#pTax').value, trackStock: $('#pTrack').checked, active: $('#pActive').checked};
+    const data = {name, price, cost, catId: $('#pCat').value || null, minStock: isNaN(min) ? S.settings.minDefault : min, unit: $('#pUnit').value, sku: $('#pSku').value.trim(), emoji: $('#pEmoji').value.trim(), color, img, imgFull, tax: +$('#pTax').value, trackStock: $('#pTrack').checked, active: $('#pActive').checked};
     if (data.sku && S.products.some(x => x.id !== id && x.sku && x.sku.toLowerCase() === data.sku.toLowerCase())) return toast('Artikelnummer ist schon vergeben', true);
     if (isNew) {
       const np = {id: uid(), created: Date.now(), stock, ...data}; S.products.push(np);
@@ -1299,6 +1372,11 @@ $('#privacyBtn').onclick = () => openModal('Datenschutz', `<div style="font-size
   <div><b style="color:var(--primary)">5. Löschen</b><p class="muted">Unter „Mehr → Alle Daten löschen“ oder durch Deinstallation der App werden alle Daten entfernt.</p></div></div>`,
   `<button class="btn btn-primary" onclick="closeModal()">✓ Verstanden</button>`);
 $('#changelogBtn').onclick = () => openModal('Was ist neu?', `<div style="font-size:.86rem;line-height:1.6">
+  <b>v1.0.3 · Build 4</b> <span class="muted">– 04.11.2026</span>
+  <ul style="padding-left:18px;margin:6px 0 12px" class="muted">
+  <li>Produktfotos in Vollbild: Foto im Produkt oder in der Produktliste antippen</li>
+  <li>Zoomen per Doppeltippen oder mit zwei Fingern, verschieben im Zoom</li>
+  <li>Neue Fotos werden zusätzlich in hoher Auflösung gespeichert (ohne Zuschnitt)</li></ul>
   <b>v1.0.2 · Build 3</b> <span class="muted">– 02.11.2026</span>
   <ul style="padding-left:18px;margin:6px 0 12px" class="muted">
   <li>Android: Status- und Navigationsleiste haben jetzt dieselbe Farbe wie die App (Hell & Dunkel)</li>
@@ -1324,6 +1402,7 @@ $('#changelogBtn').onclick = () => openModal('Was ist neu?', `<div style="font-s
 /* ═══════════════ ANDROID: ZURÜCK-TASTE ═══════════════ */
 if (IS_NATIVE && P.App) {
   P.App.addListener('backButton', () => {
+    if (lbOpen()) return closeLightbox();
     if (modalOpen()) return closeModal();
     if ($('#cart').classList.contains('open')) return closeCart();
     if (ui.view !== 'kasse') return go('kasse');
@@ -1331,7 +1410,7 @@ if (IS_NATIVE && P.App) {
   });
   P.App.addListener('pause', () => saveNow());
 }
-document.addEventListener('keydown', e => { if (e.key === 'Escape') { if (modalOpen()) closeModal(); else closeCart(); } });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') { if (lbOpen()) closeLightbox(); else if (modalOpen()) closeModal(); else closeCart(); } });
 
 /* ═══════════════ START ═══════════════ */
 (async function init() {

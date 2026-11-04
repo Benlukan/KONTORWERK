@@ -1,5 +1,10 @@
 # Changelog
 
+## v1.0.3 (Build 4) – 04.11.2026
+- Produktfotos in Vollbild: Foto in der Produkt-Detailansicht oder in der Produktliste antippen
+- Zoom per Doppeltippen oder Zwei-Finger-Geste, Verschieben im gezoomten Bild; Tippen, ✕ oder Zurück-Taste schließt
+- Neue Fotos werden zusätzlich in hoher Auflösung (max. 1600 px, ohne Zuschnitt) gespeichert; bestehende Fotos zeigen die vorhandene Auflösung – für volle Schärfe einmal neu wählen
+
 ## v1.0.2 (Build 3) – 02.11.2026
 - Android: Flächen hinter Status- und Navigationsleiste in App-Farbe (vorher grau), Symbole hell/dunkel passend zum Design – auch bei manuellem Hell/Dunkel-Wechsel
 - Kopfzeile als Leiste (gleiche Farbe wie untere Navigation), Safe-Area-Abstände für randlose Darstellung
