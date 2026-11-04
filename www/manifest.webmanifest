@@ -1,7 +1,7 @@
 {
-  "name": "KASSENWERK",
-  "short_name": "KASSENWERK",
-  "description": "Kasse, Produkte & Lager für selbstgemachte Produkte – david.digital",
+  "name": "WAWIWERK",
+  "short_name": "WAWIWERK",
+  "description": "Produkte, Lager & Verkauf für selbstgemachte Produkte – david.digital",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",

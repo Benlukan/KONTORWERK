@@ -1,10 +1,10 @@
-# 🧾 KASSENWERK
+# 📦 WAWIWERK
 
-Kasse, Produkte & Lager für selbstgemachte Produkte – im david.digital-Stil.
+Kleine Warenwirtschaft für selbstgemachte Produkte: Produkte, Lager & Verkauf – im david.digital-Stil.
 Komplett offline, keine Cloud, kein Konto. Android-App (Capacitor) + Web-Version aus derselben `www/index.html`.
 
 ## Funktionen
-- **Kasse** – Produktkacheln, Kategorien, Suche/Barcode, Rabatt, freier Betrag, Bar/Karte/Sonstiges mit Rückgeld
+- **Verkauf** – Produktkacheln, Kategorien, Suche/Barcode, Rabatt, freier Betrag, Bar/Karte/Sonstiges mit Rückgeld
 - **Bon** – teilen oder drucken, Storno mit Lager-Rückbuchung
 - **Produkte & Kategorien** – Foto/Emoji, Preise, EK/Material, Artikelnr., Einheiten, Mindestbestand
 - **Lager** – Bestände, Warnungen, Zugang/Abgang/Inventur, Bewegungsprotokoll, Lagerwert
@@ -13,7 +13,7 @@ Komplett offline, keine Cloud, kein Konto. Android-App (Capacitor) + Web-Version
 
 ## APK holen
 Jeder Push auf `main` baut die App über GitHub Actions:
-**Actions → „Android-App bauen“ → letzter Lauf → Artifacts → `KASSENWERK-android`** (ZIP mit der APK).
+**Actions → „Android-App bauen“ → letzter Lauf → Artifacts → `WAWIWERK-android`** (ZIP mit der APK).
 Die Debug-APK ist mit einem festen Schlüssel signiert – neue Versionen lassen sich über die alte installieren, die Daten bleiben erhalten.
 
 Ein Tag `v1.0.0` erzeugt zusätzlich ein GitHub-Release mit angehängter APK.
@@ -30,11 +30,14 @@ cd android && ./gradlew assembleDebug
 ```
 Web-Version: `www/index.html` im Browser öffnen.
 
+## Hinweis zum Namen
+Bis v1.0.3 hieß die App KASSENWERK. Die interne Kennung `de.daviddigital.kassenwerk` und der Speichername bleiben bewusst gleich, damit Updates ohne Datenverlust funktionieren.
+
 ## Versionierung
 Bei jeder Auslieferung hochzählen: `TOOL_CONFIG` in `www/index.html` (version + build), `versionName`/`versionCode` in `android/app/build.gradle`, `package.json`, `www/sw.js` (Cache-Name) und `CHANGELOG.md`.
 
 ## Hinweis zur Kassenführung
-KASSENWERK hat **keine zertifizierte TSE** nach Kassensicherungsverordnung. Es ist als Verkaufs- und Lagerhilfe gedacht; wie du es steuerlich einsetzen darfst, bitte mit der Steuerberatung klären.
+WAWIWERK ist kein Kassensystem und hat **keine zertifizierte TSE** nach Kassensicherungsverordnung. Es ist als Verkaufs- und Lagerhilfe gedacht; wie du es steuerlich einsetzen darfst, bitte mit der Steuerberatung klären.
 
 ---
 © david.digital

@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <string name="app_name">KASSENWERK</string>
-    <string name="title_activity_main">KASSENWERK</string>
+    <string name="app_name">WAWIWERK</string>
+    <string name="title_activity_main">WAWIWERK</string>
     <string name="package_name">de.daviddigital.kassenwerk</string>
     <string name="custom_url_scheme">de.daviddigital.kassenwerk</string>
 </resources>

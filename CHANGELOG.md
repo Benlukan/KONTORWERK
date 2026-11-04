@@ -1,5 +1,10 @@
 # Changelog
 
+## v1.1.0 (Build 5) – 04.11.2026
+- **Neuer Name: WAWIWERK** (vorher KASSENWERK) – kleine Warenwirtschaft für Produkte, Lager & Verkauf
+- Neues App-Icon (Warenstapel), Logo „W“, Reiter „Kasse“ → „Verkauf“
+- Exporte heißen jetzt `wawiwerk-…`; Daten, App-Kennung und Signatur bleiben gleich – Update ohne Datenverlust, alte Backups weiter importierbar
+
 ## v1.0.3 (Build 4) – 04.11.2026
 - Produktfotos in Vollbild: Foto in der Produkt-Detailansicht oder in der Produktliste antippen
 - Zoom per Doppeltippen oder Zwei-Finger-Geste, Verschieben im gezoomten Bild; Tippen, ✕ oder Zurück-Taste schließt

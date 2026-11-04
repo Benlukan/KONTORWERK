@@ -52,14 +52,14 @@ jobs:
         run: |
           VER=$(node -p "require('./package.json').version")
           mkdir -p out
-          cp android/app/build/outputs/apk/debug/app-debug.apk "out/KASSENWERK-v$VER.apk"
+          cp android/app/build/outputs/apk/debug/app-debug.apk "out/WAWIWERK-v$VER.apk"
           if [ -f android/app/build/outputs/bundle/release/app-release.aab ]; then
-            cp android/app/build/outputs/bundle/release/app-release.aab "out/KASSENWERK-v$VER-playstore.aab"
-            cp android/app/build/outputs/apk/release/app-release.apk "out/KASSENWERK-v$VER-release.apk"
+            cp android/app/build/outputs/bundle/release/app-release.aab "out/WAWIWERK-v$VER-playstore.aab"
+            cp android/app/build/outputs/apk/release/app-release.apk "out/WAWIWERK-v$VER-release.apk"
           fi
       - uses: actions/upload-artifact@v4
         with:
-          name: KASSENWERK-android
+          name: WAWIWERK-android
           path: out/*
       - name: An Release anhängen
         if: startsWith(github.ref, 'refs/tags/')

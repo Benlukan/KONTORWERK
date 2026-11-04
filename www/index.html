@@ -4,12 +4,13 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1">
 <meta name="mobile-web-app-capable" content="yes">
+<meta name="application-name" content="WAWIWERK">
 <meta name="theme-color" id="themeColor" content="#ffffff">
-<title>KASSENWERK — david.digital</title>
+<title>WAWIWERK — david.digital</title>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon-192.png">
 <script>
-const TOOL_CONFIG = { name: "KASSENWERK", version: "1.0.3", build: 4, emoji: "🧾", dbName: "kassenwerk", stateKey: "state_v1" };
+const TOOL_CONFIG = { name: "WAWIWERK", version: "1.1.0", build: 5, emoji: "📦", dbName: "kassenwerk", stateKey: "state_v1" };
 </script>
 <style>
 @font-face{font-family:"Inter";font-weight:400;font-display:swap;src:url(fonts/inter-latin-400-normal.woff2) format("woff2")}
@@ -330,8 +331,8 @@ input,select,textarea{font-family:inherit;font-size:16px}
 
 <header class="topbar">
   <div class="brand">
-    <div class="brand-logo">K</div>
-    <div><h1><span>KASSENWERK</span></h1><small id="shopNameTop">david.digital</small></div>
+    <div class="brand-logo">W</div>
+    <div><h1><span>WAWIWERK</span></h1><small id="shopNameTop">david.digital</small></div>
   </div>
   <div class="top-actions">
     <button class="icon-btn" id="themeBtn" title="Design wechseln">🌙</button>
@@ -424,7 +425,7 @@ input,select,textarea{font-family:inherit;font-size:16px}
       <div class="field"><label>Adresse / Kontakt (Bon-Kopf)</label><textarea class="input" id="setAddr" rows="2" placeholder="Straße, Ort · Telefon / Website"></textarea></div>
       <div class="field" style="margin-bottom:0"><label>Bon-Fußzeile</label><input class="input" id="setFoot" placeholder="Vielen Dank für Ihren Einkauf!"></div>
     </div>
-    <div class="section-title">💶 Steuer & Kasse</div>
+    <div class="section-title">💶 Steuer & Verkauf</div>
     <div class="card" style="padding:4px 16px">
       <div class="switch"><div><b>Kleinunternehmer (§ 19 UStG)</b><small>Bon ohne Umsatzsteuer-Ausweis</small></div><label class="toggle"><input type="checkbox" id="setKlein"><span></span></label></div>
       <div class="switch" id="taxRateRow"><div><b>Standard-Steuersatz</b><small>für neue Produkte</small></div><select class="input" id="setTax" style="width:110px"><option value="19">19 %</option><option value="7">7 %</option><option value="0">0 %</option></select></div>
@@ -444,17 +445,17 @@ input,select,textarea{font-family:inherit;font-size:16px}
     </div>
     <input type="file" id="importFile" accept="application/json,.json" class="hidden">
     <div class="section-title">ℹ️ Info</div>
-    <div class="info-box"><b>Hinweis zur Kassenführung:</b> KASSENWERK ist ein Verkaufs- und Lagerverwaltungs-Tool. Es besitzt keine zertifizierte technische Sicherheitseinrichtung (TSE) nach Kassensicherungsverordnung. Ob und wie du es für deine Aufzeichnungspflichten einsetzen darfst, klärst du am besten mit deiner Steuerberatung.</div>
+    <div class="info-box"><b>Hinweis zur Kassenführung:</b> WAWIWERK ist eine kleine Warenwirtschaft (Produkte, Lager, Verkauf) und kein Kassensystem. Es besitzt keine zertifizierte technische Sicherheitseinrichtung (TSE) nach Kassensicherungsverordnung. Ob und wie du es für deine Aufzeichnungspflichten einsetzen darfst, klärst du am besten mit deiner Steuerberatung.</div>
     <div class="list" style="margin-top:12px">
       <button class="li" id="privacyBtn"><div class="li-thumb">🔒</div><div class="li-main"><div class="li-title">Datenschutz</div><div class="li-sub">Alle Daten bleiben auf diesem Gerät</div></div></button>
       <button class="li" id="changelogBtn"><div class="li-thumb">📝</div><div class="li-main"><div class="li-title">Was ist neu?</div><div class="li-sub" id="verSub"></div></div></button>
     </div>
-    <div class="footer">🧾 <b>KASSENWERK</b> — david.digital <span class="fv" id="footerVersion"></span></div>
+    <div class="footer">📦 <b>WAWIWERK</b> — david.digital <span class="fv" id="footerVersion"></span></div>
   </section>
 </main>
 
 <nav class="bottomnav" id="nav">
-  <button data-v="kasse" class="active"><i>🧾</i>Kasse</button>
+  <button data-v="kasse" class="active"><i>🛍️</i>Verkauf</button>
   <button data-v="produkte"><i>📦</i>Produkte</button>
   <button data-v="lager"><i>🏷️</i>Lager<span class="nav-dot hidden" id="lowDot"></span></button>
   <button data-v="berichte"><i>📊</i>Berichte</button>
@@ -652,7 +653,7 @@ function renderPOS() {
   list.sort((a, b) => a.name.localeCompare(b.name, 'de'));
 
   if (!S.products.length) {
-    $('#posGrid').innerHTML = `<div class="card empty" style="grid-column:1/-1"><div>🧾</div><p>Noch keine Produkte angelegt.<br>Leg deine ersten Produkte an oder probier die Demo aus.</p>
+    $('#posGrid').innerHTML = `<div class="card empty" style="grid-column:1/-1"><div>📦</div><p>Noch keine Produkte angelegt.<br>Leg deine ersten Produkte an oder probier die Demo aus.</p>
       <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap"><button class="btn btn-primary" onclick="go('produkte');editProduct()">＋ Erstes Produkt</button><button class="btn" onclick="loadDemo()">✨ Demo-Daten</button></div></div>`;
   } else {
     $('#posGrid').innerHTML = list.map(p => {
@@ -844,7 +845,7 @@ const payLabel = s => s.pay === 'bar' ? '💶 Bar' : s.pay === 'karte' ? '💳 K
 function receiptText(s) {
   const st = S.settings, W = 32, line = '-'.repeat(W);
   const rr = (a, b) => { a = String(a); b = String(b); const sp = W - a.length - b.length; return sp >= 1 ? a + ' '.repeat(sp) + b : a + '\n' + ' '.repeat(Math.max(0, W - b.length)) + b; };
-  let t = (st.shopName || 'KASSENWERK') + '\n' + (st.address ? st.address + '\n' : '') + line + '\n';
+  let t = (st.shopName || 'WAWIWERK') + '\n' + (st.address ? st.address + '\n' : '') + line + '\n';
   t += 'Bon #' + s.no + '   ' + fmtDT(s.ts) + '\n' + line + '\n';
   s.items.forEach(i => { t += (i.qty > 1 ? i.qty + ' x ' : '') + i.name + '\n' + rr(i.qty > 1 ? '  à ' + eurPlain(i.price) : '', eurPlain(i.price * i.qty)) + '\n'; });
   t += line + '\n';
@@ -868,7 +869,7 @@ function showReceipt(id) {
   const st = S.settings;
   const html = `<div class="receipt">
     ${s.storno ? `<div class="rc"><span class="storno-stamp">STORNIERT</span></div>` : ''}
-    <div class="rc big">${esc(st.shopName || 'KASSENWERK')}</div>${st.address ? `<div class="rc" style="white-space:pre-line">${esc(st.address)}</div>` : ''}
+    <div class="rc big">${esc(st.shopName || 'WAWIWERK')}</div>${st.address ? `<div class="rc" style="white-space:pre-line">${esc(st.address)}</div>` : ''}
     <hr><div class="rr"><span>Bon #${s.no}</span><span>${fmtDT(s.ts)}</span></div><hr>
     ${s.items.map(i => `<div class="rr"><span>${i.qty > 1 ? i.qty + ' × ' : ''}${esc(i.name)}</span><span>${eurPlain(i.price * i.qty)}</span></div>${i.qty > 1 ? `<div class="muted" style="font-size:.72rem">&nbsp;&nbsp;à ${eurPlain(i.price)}</div>` : ''}`).join('')}
     <hr>${s.disc ? `<div class="rr"><span>Zwischensumme</span><span>${eurPlain(s.sub)}</span></div><div class="rr"><span>Rabatt${s.discount && s.discount.type === 'pct' ? ' ' + s.discount.val + ' %' : ''}</span><span>−${eurPlain(s.disc)}</span></div>` : ''}
@@ -1048,7 +1049,7 @@ function editProduct(id) {
     <div class="field ${S.settings.klein ? 'hidden' : ''}" style="flex:0 0 100px"><label>MwSt</label><select class="input" id="pTax">${[19, 7, 0].map(r => `<option value="${r}" ${r === (p.tax ?? S.settings.taxDefault) ? 'selected' : ''}>${r} %</option>`).join('')}</select></div></div>
     <div class="field"><label>Kachelfarbe</label>${colorPicker(color, true)}</div>
     <div class="switch"><div><b>Bestand führen</b><small>Aus = unbegrenzt (z. B. Gutscheine, Dienstleistung)</small></div><label class="toggle"><input type="checkbox" id="pTrack" ${p.trackStock ? 'checked' : ''}><span></span></label></div>
-    <div class="switch"><div><b>Aktiv in der Kasse</b><small>Inaktive Produkte werden ausgeblendet</small></div><label class="toggle"><input type="checkbox" id="pActive" ${p.active ? 'checked' : ''}><span></span></label></div>
+    <div class="switch"><div><b>Aktiv im Verkauf</b><small>Inaktive Produkte werden im Verkauf ausgeblendet</small></div><label class="toggle"><input type="checkbox" id="pActive" ${p.active ? 'checked' : ''}><span></span></label></div>
     ${!isNew && p.cost && p.price ? `<div class="info-box" style="margin-top:10px">Marge: <b>${eur(p.price - p.cost)}</b> (${Math.round((p.price - p.cost) / p.price * 100)} %)</div>` : ''}`,
     `${!isNew ? `<button class="btn btn-danger" id="pDel">Löschen</button><button class="btn" id="pDup">Duplizieren</button>` : ''}<button class="btn btn-primary" id="pOk">Speichern</button>`);
   const prev = () => { const c = catById($('#pCat').value); $('#pImgPrev').style.background = soft(color || (c && c.color) || '#009EB2'); $('#pImgPrev').innerHTML = img ? `<img src="${img}" alt="">` : esc($('#pEmoji').value || (c && c.emoji) || '📦'); $('#pImgPrev').classList.toggle('zoomable', !!img); };
@@ -1241,7 +1242,7 @@ $('#csvSalesBtn').onclick = () => {
   if (!list.length) return toast('Keine Verkäufe im Zeitraum', true);
   const rows = [['Bon', 'Datum', 'Uhrzeit', 'Artikel', 'Kategorie', 'Menge', 'Einzelpreis', 'Positionssumme', 'Rabatt Bon', 'Bon gesamt', 'Zahlart', 'Storniert']];
   list.forEach(s => s.items.forEach(i => { const c = catById(i.catId); rows.push([s.no, fmtDate(s.ts), fmtTime(s.ts), i.name, c ? c.name : '', i.qty, eurPlain(i.price), eurPlain(i.price * i.qty), eurPlain(s.disc || 0), eurPlain(s.total), s.pay === 'bar' ? 'Bar' : s.pay === 'karte' ? 'Karte' : (s.payNote || 'Sonstiges'), s.storno ? 'ja' : '']); }));
-  downloadFile(`kassenwerk-verkaeufe-${dayKey(Date.now())}.csv`, csv(rows), 'text/csv');
+  downloadFile(`wawiwerk-verkaeufe-${dayKey(Date.now())}.csv`, csv(rows), 'text/csv');
 };
 const csv = rows => '﻿' + rows.map(r => r.map(v => { v = String(v ?? ''); return /[;"\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; }).join(';')).join('\r\n');
 
@@ -1279,7 +1280,7 @@ function closeDay(k) {
   $('#cdOk').onclick = () => { store(); closeModal(); toast('Tagesabschluss gespeichert'); };
   $('#cdShare').onclick = () => {
     store(); const u = upd(); const st = S.settings;
-    const t = `Tagesabschluss ${fmtDate(a)}\n${st.shopName || 'KASSENWERK'}\n\nVerkäufe: ${r.n}${r.storno ? ' (+' + r.storno + ' Storno)' : ''}\nBar: ${eur(r.pay.bar || 0)}\nKarte: ${eur(r.pay.karte || 0)}\nSonstiges: ${eur(r.pay.sonst || 0)}\nUmsatz: ${eur(r.rev)}\n\nWechselgeld Start: ${eur(val('#cdOpen'))}\nEntnahmen: ${eur(val('#cdOut'))}\nSoll Bargeld: ${eur(u.soll)}${u.has ? `\nGezählt: ${eur(val('#cdCount'))}\nDifferenz: ${eur(u.diff)}` : ''}${$('#cdNote').value.trim() ? '\nNotiz: ' + $('#cdNote').value.trim() : ''}`;
+    const t = `Tagesabschluss ${fmtDate(a)}\n${st.shopName || 'WAWIWERK'}\n\nVerkäufe: ${r.n}${r.storno ? ' (+' + r.storno + ' Storno)' : ''}\nBar: ${eur(r.pay.bar || 0)}\nKarte: ${eur(r.pay.karte || 0)}\nSonstiges: ${eur(r.pay.sonst || 0)}\nUmsatz: ${eur(r.rev)}\n\nWechselgeld Start: ${eur(val('#cdOpen'))}\nEntnahmen: ${eur(val('#cdOut'))}\nSoll Bargeld: ${eur(u.soll)}${u.has ? `\nGezählt: ${eur(val('#cdCount'))}\nDifferenz: ${eur(u.diff)}` : ''}${$('#cdNote').value.trim() ? '\nNotiz: ' + $('#cdNote').value.trim() : ''}`;
     shareText('Tagesabschluss ' + fmtDate(a), t);
   };
 }
@@ -1326,14 +1327,14 @@ async function shareText(title, text) {
     await navigator.clipboard.writeText(text); toast('In die Zwischenablage kopiert');
   } catch (e) { /* abgebrochen */ }
 }
-$('#exportBtn').onclick = () => downloadFile(`kassenwerk-backup-${dayKey(Date.now())}.json`, JSON.stringify({app: 'KASSENWERK', version: TOOL_CONFIG.version, exported: new Date().toISOString(), data: S}), 'application/json');
+$('#exportBtn').onclick = () => downloadFile(`wawiwerk-backup-${dayKey(Date.now())}.json`, JSON.stringify({app: 'WAWIWERK', version: TOOL_CONFIG.version, exported: new Date().toISOString(), data: S}), 'application/json');
 $('#importBtn').onclick = () => $('#importFile').click();
 $('#importFile').onchange = e => {
   const f = e.target.files[0]; if (!f) return; const fr = new FileReader();
   fr.onload = async () => {
     try {
       const j = JSON.parse(fr.result); const d = j.data || j;
-      if (!d || !Array.isArray(d.products) || !Array.isArray(d.sales)) throw new Error('Kein KASSENWERK-Backup');
+      if (!d || !Array.isArray(d.products) || !Array.isArray(d.sales)) throw new Error('Kein WAWIWERK-Backup');
       if (!await confirmBox('Backup wiederherstellen?', `${d.products.length} Produkte, ${(d.categories || []).length} Kategorien und ${d.sales.length} Verkäufe werden geladen. <b>Alle aktuellen Daten werden ersetzt.</b>`, 'Wiederherstellen', true)) return;
       S = normalize(d); cart = {lines: [], discount: null}; await saveNow(); applyTheme(); toast('Backup wiederhergestellt'); render();
     } catch (err) { toast('Datei ungültig: ' + err.message, true); }
@@ -1345,7 +1346,7 @@ $('#csvProdBtn').onclick = () => {
   if (!S.products.length) return toast('Keine Produkte vorhanden', true);
   const rows = [['Name', 'Kategorie', 'Artikelnr.', 'Verkaufspreis', 'EK/Material', 'Bestand', 'Einheit', 'Mindestbestand', 'Lagerwert VK', 'Aktiv']];
   S.products.forEach(p => { const c = catById(p.catId); rows.push([p.name, c ? c.name : '', p.sku || '', eurPlain(p.price), eurPlain(p.cost || 0), p.trackStock ? p.stock : '∞', p.unit || 'Stk', p.minStock ?? '', p.trackStock ? eurPlain(Math.max(0, p.stock) * p.price) : '', p.active ? 'ja' : 'nein']); });
-  downloadFile(`kassenwerk-produkte-${dayKey(Date.now())}.csv`, csv(rows), 'text/csv');
+  downloadFile(`wawiwerk-produkte-${dayKey(Date.now())}.csv`, csv(rows), 'text/csv');
 };
 $('#wipeBtn').onclick = async () => {
   if (!await confirmBox('Alle Daten löschen?', 'Produkte, Kategorien, Lager und alle Verkäufe werden <b>unwiderruflich</b> gelöscht. Tipp: Vorher ein Backup exportieren.', 'Alles löschen', true)) return;
@@ -1368,10 +1369,15 @@ $('#privacyBtn').onclick = () => openModal('Datenschutz', `<div style="font-size
   <div><b style="color:var(--primary)">1. Verantwortlicher</b><p class="muted">Diese App läuft vollständig lokal auf deinem Gerät. Anbieter: <b style="color:var(--text)">david.digital</b>.</p></div>
   <div><b style="color:var(--primary)">2. Gespeicherte Daten</b><p class="muted">Produkte, Kategorien, Lagerbestände, Verkäufe und Einstellungen werden ausschließlich im lokalen Speicher der App (IndexedDB) abgelegt. Es gibt keinen Server, kein Konto, kein Tracking und keine Werbung.</p></div>
   <div><b style="color:var(--primary)">3. Weitergabe</b><p class="muted">Daten verlassen das Gerät nur, wenn du selbst einen Export, ein Backup oder einen Bon teilst.</p></div>
-  <div><b style="color:var(--primary)">4. Kundendaten</b><p class="muted">KASSENWERK speichert keine Kundendaten. Gib in Notizfeldern bitte keine personenbezogenen Daten ein.</p></div>
+  <div><b style="color:var(--primary)">4. Kundendaten</b><p class="muted">WAWIWERK speichert keine Kundendaten. Gib in Notizfeldern bitte keine personenbezogenen Daten ein.</p></div>
   <div><b style="color:var(--primary)">5. Löschen</b><p class="muted">Unter „Mehr → Alle Daten löschen“ oder durch Deinstallation der App werden alle Daten entfernt.</p></div></div>`,
   `<button class="btn btn-primary" onclick="closeModal()">✓ Verstanden</button>`);
 $('#changelogBtn').onclick = () => openModal('Was ist neu?', `<div style="font-size:.86rem;line-height:1.6">
+  <b>v1.1.0 · Build 5</b> <span class="muted">– 04.11.2026</span>
+  <ul style="padding-left:18px;margin:6px 0 12px" class="muted">
+  <li>Neuer Name: <b>WAWIWERK</b> – kleine Warenwirtschaft für Produkte, Lager & Verkauf (vorher KASSENWERK)</li>
+  <li>Neues App-Icon, Reiter „Kasse“ heißt jetzt „Verkauf“</li>
+  <li>Alle Daten bleiben erhalten, alte Backups lassen sich weiter einspielen</li></ul>
   <b>v1.0.3 · Build 4</b> <span class="muted">– 04.11.2026</span>
   <ul style="padding-left:18px;margin:6px 0 12px" class="muted">
   <li>Produktfotos in Vollbild: Foto im Produkt oder in der Produktliste antippen</li>
