@@ -1,6 +1,6 @@
 {
   "name": "kontorwerk",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "private": true,
   "description": "KONTORWERK – modulares ERP für Maker: Warenwirtschaft, Verkauf, Kontakte und mehr",
   "scripts": {
@@ -9,7 +9,7 @@
     "preview": "vite preview",
     "sync": "vite build && cap sync",
     "android": "vite build && cap sync android && cd android && ./gradlew assembleDebug",
-    "icons": "capacitor-assets generate --android --iconBackgroundColor '#0d1117' --iconBackgroundColorDark '#0d1117' --splashBackgroundColor '#f0f2f8' --splashBackgroundColorDark '#0d1117'"
+    "icons": "node tools/brand.mjs && python3 tools/render_brand.py && capacitor-assets generate --android --splashBackgroundColor '#f0f2f8' --splashBackgroundColorDark '#0d1117'"
   },
   "dependencies": {
     "@capacitor/android": "^8.6.0",

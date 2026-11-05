@@ -7,6 +7,7 @@ import {modules, isActive, toggleBlocker, setActive} from '../../core/modules.js
 import {exportBackup, parseBackup, restoreBackup, wipeAll} from '../../core/backup.js';
 import {changelogHtml} from '../../core/changelog.js';
 import {TOOL_CONFIG} from '../../core/config.js';
+import {moduleIcon} from '../../core/brand.js';
 import {cfg, connected, connect, disconnect, syncNow, status, requestFullSync} from '../../core/sync.js';
 import {fmtDT, IS_NATIVE} from '../../core/util.js';
 
@@ -44,13 +45,13 @@ export const html = `
       <button class="li" id="privacyBtn"><div class="li-thumb">🔒</div><div class="li-main"><div class="li-title">Datenschutz</div><div class="li-sub">Daten auf dem Gerät und auf deinem Server</div></div></button>
       <button class="li" id="changelogBtn"><div class="li-thumb">📝</div><div class="li-main"><div class="li-title">Was ist neu?</div><div class="li-sub" id="verSub"></div></div></button>
     </div>
-    <div class="footer">🏛️ <b>KONTORWERK</b> — david.digital <span class="fv" id="footerVersion"></span></div>`;
+    <div class="footer"><b>KONTORWERK</b> · Das ERP für Selbstständige — david.digital <span class="fv" id="footerVersion"></span></div>`;
 
 function renderModules() {
   $('#modList').innerHTML = modules().filter(m => !m.hidden).map(m => {
     const on = isActive(m.id), blk = toggleBlocker(m.id);
     const req = m.requires.length ? ' · braucht ' + m.requires.map(r => modules().find(x => x.id === r).name).join(', ') : '';
-    return `<div class="mod-row ${m.planned ? 'planned' : ''}"><div class="mi">${m.icon}</div>
+    return `<div class="mod-row ${m.planned ? 'planned' : ''}"><div class="mi ${moduleIcon(m.id) ? 'svg' : ''}">${moduleIcon(m.id, 40) || m.icon}</div>
       <div class="mm"><b>${esc(m.name)} ${m.planned ? `<span class="badge gray">Phase ${m.planned}</span>` : m.core ? '<span class="badge">Kern</span>' : ''}</b><small>${esc(m.desc)}${esc(req)}</small>${blk && !m.core && !m.planned ? `<small style="color:var(--warn)">${esc(blk)}</small>` : ''}</div>
       <label class="toggle"><input type="checkbox" data-mod="${m.id}" ${on ? 'checked' : ''} ${blk ? 'disabled' : ''}><span></span></label></div>`;
   }).join('');

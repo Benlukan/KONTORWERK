@@ -1,5 +1,7 @@
 /* „Was ist neu?“ – in der App angezeigt (ausführlich: CHANGELOG.md) */
 export const CHANGELOG = [
+  ['2.2.0', 10, '05.11.2026', ['Neues Logo und App-Icon: das Kontor-Haus mit den Modul-Kacheln', 'Neues Startbild (hell und dunkel) mit „Das ERP für Selbstständige“', 'Eigene farbige Symbole für jedes Modul (Einstellungen, Übersicht, Seitenleiste)']],
+  ['2.1.1', 9, '05.11.2026', ['Läuft jetzt auch auf älteren Tablets und Handys ab Android 7 (ältere eingebaute WebView)']],
   ['2.1.0', 8, '05.11.2026', [
     'Neu: <b>Geräte-Abgleich</b> – Handy und PC arbeiten mit denselben Daten über deinen eigenen PocketBase-Server',
     'Funktioniert offline weiter: Änderungen werden abgeglichen, sobald wieder Netz da ist',

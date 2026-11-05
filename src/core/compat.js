@@ -1,0 +1,6 @@
+/* Ältere Android-WebViews (z. B. Android 7 ohne aktuelle „Android System WebView“):
+ * fehlende Funktionen nachrüsten. Muss als Erstes geladen werden (siehe main.js). */
+if (!Object.fromEntries) Object.fromEntries = it => { const o = {}; for (const [k, v] of it) o[k] = v; return o; };
+if (!Array.prototype.flat) Object.defineProperty(Array.prototype, 'flat', {configurable: true, writable: true, value(d = 1) { return d < 1 ? this.slice() : this.reduce((a, x) => a.concat(Array.isArray(x) ? x.flat(d - 1) : x), []); }});
+if (!Array.prototype.flatMap) Object.defineProperty(Array.prototype, 'flatMap', {configurable: true, writable: true, value(fn, t) { return this.map(fn, t).flat(); }});
+if (typeof window.structuredClone !== 'function') window.structuredClone = v => JSON.parse(JSON.stringify(v));

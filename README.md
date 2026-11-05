@@ -1,6 +1,8 @@
-# 🏛️ KONTORWERK
+# KONTORWERK
 
-Modulares ERP für Maker und kleine Betriebe – im david.digital-Stil.
+![KONTORWERK](assets/branding/icon.svg)
+
+**Das ERP für Selbstständige** – modular, im david.digital-Stil.
 Läuft offline als Android-App (Capacitor) und im Browser am PC, aus derselben Codebasis.
 Nachfolger von WAWIWERK (vorher KASSENWERK).
 
@@ -56,6 +58,9 @@ Ein Tag `v2.0.0` erzeugt zusätzlich ein GitHub-Release mit angehängter APK.
 Repo-Secrets anlegen, dann baut die Action zusätzlich ein signiertes `.aab`:
 `ANDROID_KEYSTORE_BASE64`, `ANDROID_KEYSTORE_PASSWORD`, `ANDROID_KEY_ALIAS`, `ANDROID_KEY_PASSWORD`
 
+## Ältere Geräte
+Mindestens **Android 7.0** (API 24). Der Code wird für WebViews ab Chrome 61 übersetzt (`vite.config.js`, `src/core/compat.js`). Capacitor verlangt WebView 60 oder neuer – auf alten Geräten im Play Store „Android System WebView“ aktualisieren. Der Geräte-Abgleich über Let’s-Encrypt-HTTPS braucht Android 7.1.1 oder neuer.
+
 ## Lokal entwickeln
 ```bash
 npm ci
@@ -63,6 +68,9 @@ npm run dev            # Browser mit Live-Neuladen
 npm run build          # www/index.html bauen
 npm run android        # bauen + Debug-APK
 ```
+
+## Logo & Icons
+Das Logo ist als Vektorgrafik in `src/core/brand.js` hinterlegt (Entwurf: `assets/branding/entwurf.png`). `npm run icons` erzeugt daraus `assets/branding/*.svg`, die PNG-Quellen in `assets/` und `public/` und mit capacitor-assets alle Android-Icons und Startbilder (braucht Python mit Playwright).
 
 ## Versionierung
 Bei jeder Auslieferung hochzählen: `src/core/config.js` (version + build), `src/core/changelog.js`, `versionName`/`versionCode` in `android/app/build.gradle`, `package.json`, `public/sw.js` (Cache-Name) und `CHANGELOG.md`.

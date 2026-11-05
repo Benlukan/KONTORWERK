@@ -6,5 +6,6 @@ import {viteSingleFile} from 'vite-plugin-singlefile';
 export default defineConfig({
   base: './',
   plugins: [viteSingleFile()],
-  build: {outDir: 'www', emptyOutDir: true, target: 'es2020'}
+  // Ziel: auch alte Android-WebViews (ab Chrome 61, z. B. Tablets mit Android 7)
+  build: {outDir: 'www', emptyOutDir: true, target: ['es2017', 'chrome61'], cssTarget: 'chrome61'}
 });

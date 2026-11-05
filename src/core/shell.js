@@ -3,6 +3,7 @@ import {$, $$, esc, Cap, IS_NATIVE, P, isDesktop} from './util.js';
 import {K, saveSettings} from './db.js';
 import {modules, isActive, activeViews, viewById} from './modules.js';
 import {TOOL_CONFIG} from './config.js';
+import {moduleIcon} from './brand.js';
 
 export const ui = {view: null};
 const MOBILE_SLOTS = 4; // + „Mehr“
@@ -34,7 +35,7 @@ export function buildNav() {
     + `<button data-v="mehr"><i>☰</i>Mehr<span class="nav-dot hidden" data-dot="mehr"></span></button>`;
   // PC: Seitenleiste, gruppiert nach Modul
   const groups = modules().filter(m => isActive(m.id) && m.views.some(v => v.sidebar !== false));
-  $('#sideNav').innerHTML = groups.map(m => `<div class="side-group">${esc(m.sideGroup || m.name)}</div>` +
+  $('#sideNav').innerHTML = groups.map(m => `<div class="side-group">${moduleIcon(m.id, 16)}${esc(m.sideGroup || m.name)}</div>` +
     m.views.filter(v => v.sidebar !== false).map(v => `<button class="side-link" data-v="${v.id}"><i>${v.icon}</i>${esc(v.label)}<span class="nav-dot hidden" data-dot="${v.id}"></span></button>`).join('')).join('');
   $$('[data-v]').forEach(b => b.onclick = () => go(b.dataset.v));
   $('#sideVersion').textContent = `v${TOOL_CONFIG.version} · Build ${TOOL_CONFIG.build}`;

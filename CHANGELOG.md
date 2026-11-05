@@ -1,5 +1,14 @@
 # Changelog
 
+## v2.2.0 (Build 10) – 05.11.2026
+- **Neues Logo und App-Icon** nach Davids Entwurf: Kontor-Haus über sechs Modul-Kacheln auf Nachtblau – als Vektorgrafik nachgezeichnet (`src/core/brand.js`), daraus Android-Icons (adaptiv + klassisch), Web-Icons und Startbilder
+- Startbild hell und dunkel mit Schriftzug und „Das ERP für Selbstständige“
+- Modul-Symbole (Warenwirtschaft, Dokumente, Logistik, E-Commerce, Produktion, Buchhaltung, Unternehmerlohn) in Einstellungen, Übersicht, „Mehr“ und Seitenleiste
+- `npm run icons` erzeugt alle Icons neu (tools/brand.mjs → tools/render_brand.py → capacitor-assets)
+
+## v2.1.1 (Build 9) – 05.11.2026
+- Ältere Geräte ab Android 7.0 (z. B. Tablets mit Android 7.1.1): Code wird für alte WebViews (ab Chrome 61) übersetzt, fehlende Funktionen werden nachgerüstet, Produktkacheln mit fester Bildhöhe, wenn `aspect-ratio` fehlt
+
 ## v2.1.0 (Build 8) – 05.11.2026
 - **Geräte-Abgleich** über einen eigenen PocketBase-Server: Einstellungen → Geräte-Abgleich → Server-Adresse, E-Mail, Passwort
 - Offline-fähig: Änderungen werden nach jeder Änderung (4 s), jede Minute, beim Öffnen und beim Schließen der App abgeglichen

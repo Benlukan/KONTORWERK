@@ -4,6 +4,7 @@ import {T, K, saveSettings} from '../../core/db.js';
 import {toast, openModal, closeModal} from '../../core/ui.js';
 import {go, render} from '../../core/shell.js';
 import {isActive, modules, viewById} from '../../core/modules.js';
+import {moduleIcon} from '../../core/brand.js';
 import {umsatzJahr, stufe, GRENZE_LAUFEND, GRENZE_VORJAHR} from '../../core/umsatz.js';
 
 export const html = `
@@ -70,7 +71,7 @@ function planHtml() {
   const planned = modules().filter(m => m.planned).sort((a, b) => a.planned - b.planned);
   if (!planned.length) return '';
   return `<div class="section-title">🧩 Module in Arbeit <span class="muted">Ausbau nach Phasenplan</span></div>
-    <div class="list">${planned.map(m => `<div class="li"><div class="li-thumb">${m.icon}</div><div class="li-main"><div class="li-title">${esc(m.name)}</div><div class="li-sub">${esc(m.desc)}</div></div><div class="li-end"><span class="badge gray">Phase ${m.planned}</span></div></div>`).join('')}</div>`;
+    <div class="list">${planned.map(m => `<div class="li"><div class="li-thumb svg">${moduleIcon(m.id, 44) || m.icon}</div><div class="li-main"><div class="li-title">${esc(m.name)}</div><div class="li-sub">${esc(m.desc)}</div></div><div class="li-end"><span class="badge gray">Phase ${m.planned}</span></div></div>`).join('')}</div>`;
 }
 
 export function renderUebersicht() {

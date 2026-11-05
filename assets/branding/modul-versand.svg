@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" class="kw-ico" width="256" height="256" viewBox="0 0 100 100" aria-hidden="true"><g transform="translate(0 0) scale(1)">
+    <defs><linearGradient id="kwt26" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#26b5ae"/><stop offset="1" stop-color="#0f857c"/></linearGradient></defs>
+    <rect width="100" height="100" rx="20" fill="url(#kwt26)"/>
+    <g transform="translate(10 10) scale(.8)">
+    <rect x="10" y="28" width="50" height="38" rx="5" fill="#fff"/>
+    <path d="M62 38 H78 L90 52 V66 H62 Z" fill="#fff" stroke="#fff" stroke-width="4" stroke-linejoin="round"/>
+    <path d="M67 43 H76 L83 52 H67 Z" fill="#0f857c"/>
+    <circle cx="30" cy="70" r="10" fill="#fff" stroke="#0f857c" stroke-width="4"/>
+    <circle cx="74" cy="70" r="10" fill="#fff" stroke="#0f857c" stroke-width="4"/></g></g></svg>
