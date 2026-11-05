@@ -206,6 +206,7 @@ function finalize(id) {
     d.nr = nextNr(d.art, d.datum); // erneut, falls inzwischen ein anderes Gerät eine Nummer vergeben hat
     d.status = d.art === 'lieferschein' ? 'erstellt' : 'offen';
     d.festgeschrieben = true; d.festTs = Date.now(); d.absender = absenderSnapshot(); d.klein = !!K.settings.klein;
+    if (d.art === 'gutschrift') d.erstattung = true; // eigenständige Gutschrift: Betrag wird ausgezahlt
     if (lines.length && $('#fStock') && $('#fStock').checked) {
       lines.forEach(p => { const pr = prodById(p.pid); pr.stock -= p.menge; put('produkt', pr); addMove(pr.id, -p.menge, 'doc', d.nr, d.id); });
       d.lagerGebucht = true;
@@ -228,6 +229,7 @@ export function viewDoc(d) {
   if (d.betreff) rows.push(['Betreff', esc(d.betreff)]);
   if (d.bezugNr) rows.push(['Bezug', esc(d.bezugNr)]);
   if (d.stornoNr) rows.push(['Storniert durch', esc(d.stornoNr)]);
+  if (d.erledigtAm) rows.push(['Ausgezahlt am', deDay(d.erledigtAm) + (d.zahlart ? ' · ' + esc(d.zahlart) : '')]);
   if (d.bezahltAm) rows.push(['Bezahlt am', deDay(d.bezahltAm) + (d.zahlart ? ' · ' + esc(d.zahlart) : '')]);
   if (d.lagerGebucht) rows.push(['Lager', 'Bestand abgebucht']);
   rows.push(['Status', statusBadge(d)]);
@@ -256,7 +258,7 @@ async function action(d, act) {
   if (act === 'paid') return paidDialog(d);
   if (act === 'unpaid') { d.status = 'offen'; d.bezahltAm = null; d.zahlart = ''; put('beleg', d); closeModal(); return render(); }
   if (act === 'accept' || act === 'reject') { d.status = act === 'accept' ? 'angenommen' : 'abgelehnt'; put('beleg', d); closeModal(); return render(); }
-  if (act === 'done') { d.status = 'erledigt'; put('beleg', d); closeModal(); return render(); }
+  if (act === 'done') return paidDialog(d, true);
   if (act === 'copy' || act === 'toRechnung' || act === 'toLieferschein') {
     const art = act === 'toRechnung' ? 'rechnung' : act === 'toLieferschein' ? 'lieferschein' : d.art;
     const n = blank(art);
@@ -269,7 +271,7 @@ async function action(d, act) {
     if (!await confirmBox(`Rechnung ${esc(d.nr)} stornieren?`, `Es wird eine Storno-Gutschrift über ${eur(d.total)} erstellt und die Rechnung als storniert markiert.${d.lagerGebucht && isActive('wawi') ? ' Die Ware wird wieder ins Lager gebucht.' : ''} Das lässt sich nicht rückgängig machen.`, 'Stornieren', true)) return;
     const g = {...blank('gutschrift'), kontaktId: d.kontaktId, empf: {...d.empf}, betreff: `Storno zu Rechnung ${d.nr}`, einleitung: `hiermit storniere ich die Rechnung ${d.nr} vom ${deDay(d.datum)} vollständig.`, schluss: '',
       positionen: d.positionen.map(p => ({...p})), bezugId: d.id, bezugNr: d.nr, stornoVon: d.id};
-    g.nr = nextNr('gutschrift', g.datum); g.status = d.status === 'bezahlt' ? 'offen' : 'erledigt'; g.festgeschrieben = true; g.festTs = Date.now(); g.absender = absenderSnapshot(); g.klein = !!K.settings.klein;
+    g.nr = nextNr('gutschrift', g.datum); g.status = d.status === 'bezahlt' ? 'offen' : 'erledigt'; g.erstattung = d.status === 'bezahlt'; /* nur dann fließt Geld zurück */ g.festgeschrieben = true; g.festTs = Date.now(); g.absender = absenderSnapshot(); g.klein = !!K.settings.klein;
     g.total = docTotal(g); g.ts = parseDay(g.datum);
     put('beleg', g);
     if (d.lagerGebucht && isActive('wawi')) d.positionen.forEach(p => { const pr = p.pid && prodById(p.pid); if (pr && pr.trackStock) { pr.stock += p.menge; put('produkt', pr); addMove(pr.id, p.menge, 'storno', 'Storno ' + d.nr, d.id); } });
@@ -278,13 +280,17 @@ async function action(d, act) {
   }
 }
 
-function paidDialog(d) {
-  openModal('Zahlung erfassen', `
-    <div class="row"><div class="field"><label>Bezahlt am</label><input class="input" type="date" id="pDate" value="${isoDay(Date.now())}"></div>
+function paidDialog(d, erstattung) {
+  openModal(erstattung ? 'Erstattung erfassen' : 'Zahlung erfassen', `
+    <div class="row"><div class="field"><label>${erstattung ? 'Ausgezahlt am' : 'Bezahlt am'}</label><input class="input" type="date" id="pDate" value="${isoDay(Date.now())}"></div>
     <div class="field"><label>Zahlart</label><select class="input" id="pArt">${['Überweisung', 'Bar', 'Karte', 'PayPal', 'Sonstiges'].map(z => `<option>${z}</option>`).join('')}</select></div></div>`,
     `<button class="btn" id="pNo">Abbrechen</button><button class="btn btn-primary" id="pOk">✓ Bezahlt</button>`);
   $('#pNo').onclick = () => { closeModal(); setTimeout(() => viewDoc(d), 230); };
-  $('#pOk').onclick = () => { d.status = 'bezahlt'; d.bezahltAm = $('#pDate').value || isoDay(Date.now()); d.zahlart = $('#pArt').value; put('beleg', d); closeModal(); toast(`${d.nr} als bezahlt markiert`); render(); };
+  $('#pOk').onclick = () => {
+    const day = $('#pDate').value || isoDay(Date.now());
+    if (erstattung) { d.status = 'erledigt'; d.erledigtAm = day; } else { d.status = 'bezahlt'; d.bezahltAm = day; }
+    d.zahlart = $('#pArt').value; put('beleg', d); closeModal(); toast(`${d.nr} ${erstattung ? 'erledigt' : 'als bezahlt markiert'}`); render();
+  };
 }
 
 async function sharePdf(d) {

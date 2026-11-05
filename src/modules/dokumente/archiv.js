@@ -96,6 +96,7 @@ function editBeleg(id, neu) {
     <div class="row"><div class="field"><label>Belegdatum</label><input class="input" type="date" id="bDatum" value="${d.datum || ''}"></div>
     <div class="field"><label>Betrag (€)</label><input class="input" id="bBetrag" inputmode="decimal" value="${moneyIn(d.betrag)}" placeholder="optional"></div></div>
     <div class="field"><label>Lieferant / Aussteller</label><input class="input" id="bPartner" list="bPartners" value="${esc(d.partner)}" placeholder="z. B. Baumarkt, Etsy, Deutsche Post"><datalist id="bPartners">${lieferanten.map(l => `<option value="${esc(l)}">`).join('')}</datalist></div>
+    <div class="row"><div class="field"><label>Bezahlt über</label><select class="input" id="bKonto">${[['bank', 'Bank'], ['kasse', 'Bar (Kasse)'], ['paypal', 'PayPal']].map(([k, l]) => `<option value="${k}" ${k === (d.konto || 'bank') ? 'selected' : ''}>${l}</option>`).join('')}</select></div></div>
     <div class="field"><label>Kategorie</label><select class="input" id="bKat">${KATEGORIEN.map(k => `<option ${k === d.kategorie ? 'selected' : ''}>${esc(k)}</option>`).join('')}</select></div>
     <div class="field"><label>Titel / Belegnummer</label><input class="input" id="bTitel" value="${esc(d.titel)}" placeholder="z. B. Rechnung 4711, Holz Eiche"></div>
     <div class="field"><label>Notiz</label><input class="input" id="bNotiz" value="${esc(d.notiz)}"></div>`,
@@ -103,7 +104,7 @@ function editBeleg(id, neu) {
   $('#bOk').onclick = async () => {
     const braw = $('#bBetrag').value.trim(), betrag = braw ? parseMoney(braw) : null;
     if (braw && (isNaN(betrag) || betrag < 0)) return toast('Ungültiger Betrag', true);
-    const meta = {datum: $('#bDatum').value || isoDay(Date.now()), betrag, partner: $('#bPartner').value.trim(), kategorie: $('#bKat').value, titel: $('#bTitel').value.trim(), notiz: $('#bNotiz').value.trim()};
+    const meta = {datum: $('#bDatum').value || isoDay(Date.now()), betrag, partner: $('#bPartner').value.trim(), kategorie: $('#bKat').value, titel: $('#bTitel').value.trim(), notiz: $('#bNotiz').value.trim(), konto: $('#bKonto').value};
     $('#bOk').disabled = true;
     try {
       if (id) { Object.assign(d, meta); put('dokument', d); }
