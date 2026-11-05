@@ -1,4 +1,5 @@
 /* ═══════════════ KONTORWERK – Start ═══════════════ */
+import './core/compat.js'; // zuerst: Nachrüstungen für alte WebViews
 import './styles.css';
 import './shell.css';
 import {$, IS_NATIVE, P} from './core/util.js';

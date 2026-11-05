@@ -1,5 +1,8 @@
 /* ═══════════════ KONTORWERK – Shell, Kern-Ansichten ═══════════════ */
 
+/* Alte WebViews ohne aspect-ratio (vor Chrome 88): feste Bildhöhe in den Kacheln */
+@supports not (aspect-ratio:1/1){.tile .ti-img{height:84px}}
+
 /* Seitenleiste (PC) – auf dem Handy ausgeblendet */
 .sidebar{display:none}
 .side-group{font-size:.66rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:700;padding:16px 12px 6px}

@@ -1,5 +1,8 @@
 # Changelog
 
+## v2.1.1 (Build 9) – 05.11.2026
+- Ältere Geräte ab Android 7.0 (z. B. Tablets mit Android 7.1.1): Code wird für alte WebViews (ab Chrome 61) übersetzt, fehlende Funktionen werden nachgerüstet, Produktkacheln mit fester Bildhöhe, wenn `aspect-ratio` fehlt
+
 ## v2.1.0 (Build 8) – 05.11.2026
 - **Geräte-Abgleich** über einen eigenen PocketBase-Server: Einstellungen → Geräte-Abgleich → Server-Adresse, E-Mail, Passwort
 - Offline-fähig: Änderungen werden nach jeder Änderung (4 s), jede Minute, beim Öffnen und beim Schließen der App abgeglichen

@@ -56,6 +56,9 @@ Ein Tag `v2.0.0` erzeugt zusätzlich ein GitHub-Release mit angehängter APK.
 Repo-Secrets anlegen, dann baut die Action zusätzlich ein signiertes `.aab`:
 `ANDROID_KEYSTORE_BASE64`, `ANDROID_KEYSTORE_PASSWORD`, `ANDROID_KEY_ALIAS`, `ANDROID_KEY_PASSWORD`
 
+## Ältere Geräte
+Mindestens **Android 7.0** (API 24). Der Code wird für WebViews ab Chrome 61 übersetzt (`vite.config.js`, `src/core/compat.js`). Capacitor verlangt WebView 60 oder neuer – auf alten Geräten im Play Store „Android System WebView“ aktualisieren. Der Geräte-Abgleich über Let’s-Encrypt-HTTPS braucht Android 7.1.1 oder neuer.
+
 ## Lokal entwickeln
 ```bash
 npm ci
