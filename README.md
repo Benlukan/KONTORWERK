@@ -1,22 +1,53 @@
-# 📦 WAWIWERK
+# 🏛️ KONTORWERK
 
-Kleine Warenwirtschaft für selbstgemachte Produkte: Produkte, Lager & Verkauf – im david.digital-Stil.
-Komplett offline, keine Cloud, kein Konto. Android-App (Capacitor) + Web-Version aus derselben `www/index.html`.
+Modulares ERP für Maker und kleine Betriebe – im david.digital-Stil.
+Läuft offline als Android-App (Capacitor) und im Browser am PC, aus derselben Codebasis.
+Nachfolger von WAWIWERK (vorher KASSENWERK).
 
-## Funktionen
-- **Verkauf** – Produktkacheln, Kategorien, Suche/Barcode, Rabatt, freier Betrag, Bar/Karte/Sonstiges mit Rückgeld
-- **Bon** – teilen oder drucken, Storno mit Lager-Rückbuchung
-- **Produkte & Kategorien** – Foto/Emoji, Preise, EK/Material, Artikelnr., Einheiten, Mindestbestand
-- **Lager** – Bestände, Warnungen, Zugang/Abgang/Inventur, Bewegungsprotokoll, Lagerwert
-- **Berichte** – Umsatz, Rohertrag, Zahlarten, Kategorien, Top-Produkte, Verlauf, CSV-Export, Tagesabschluss
-- **Daten** – Backup/Wiederherstellen (JSON), Hell/Dunkel-Modus
+Konzept & Phasenplan: [KONTORWERK – ERP-Konzept](https://claude.ai/artifact/2gtw9WY82P91s1xAupyo2W)
+
+## Module
+
+| Modul | Status | braucht |
+| --- | --- | --- |
+| Kern: Übersicht (Kleinunternehmer-Wächter), Kontakte, Einstellungen | ✅ v2.0 | – |
+| Warenwirtschaft & Verkauf: Produkte, Kategorien, Lager, Verkauf mit Bon, Berichte, Tagesabschluss | ✅ v2.0 | Kern |
+| Geräte-Abgleich (PocketBase) | Phase 2 | – |
+| Dokumente: Rechnung, Angebot, Lieferschein, Belegarchiv | Phase 2 | – |
+| Buchhaltung (EÜR, DATEV-Export) | Phase 3 | Dokumente |
+| Unternehmerlohn (Privatentnahmen) | Phase 3 | Buchhaltung |
+| E-Commerce (Etsy) | Phase 4 | Warenwirtschaft |
+| Produktion (Stücklisten, Fertigungsaufträge) | Phase 5 | Warenwirtschaft |
+| Logistik & Versand | Phase 5 | Warenwirtschaft |
+
+Module werden unter **Einstellungen → Module** ein- und ausgeschaltet. Ausgeschaltete Module behalten ihre Daten.
+
+## Aufbau
+
+```
+index.html            App-Hülle (Seitenleiste, Kopfzeile, Dialoge)
+src/main.js           Start, Modul-Reihenfolge, Zurück-Taste
+src/core/             Kern: Datenbank, Modul-Registry, Shell, Dialoge, Backup, Übernahme aus WAWIWERK
+src/modules/kern/     Übersicht, Kontakte, Einstellungen, „Mehr“
+src/modules/wawi/     Warenwirtschaft & Verkauf (Verkauf, Produkte, Lager, Berichte)
+src/modules/geplant.js  Geplante Module (Manifest mit Phase und Abhängigkeiten)
+public/               Schriften, Icons, Manifest, Service Worker
+www/                  Build-Ausgabe (nicht im Repo) – eine einzige index.html
+```
+
+**Neues Modul:** Ordner unter `src/modules/`, `registerModule({id, name, icon, desc, requires, views, init})` aufrufen und in `src/main.js` importieren. Jede Ansicht bringt ihr HTML und eine `render()`-Funktion mit.
+
+**Daten:** IndexedDB `kontorwerk`, eine Tabelle je Bereich (`kontakt`, `kategorie`, `produkt`, `lagerbewegung`, `beleg`, `tagesabschluss`) plus `meta` (Einstellungen, Geräte-ID). Jeder Datensatz trägt `erstellt`, `geaendert`, `geraet`; Löschen setzt einen Grabstein (`geloescht: true`). Schreiben nur über `put()` / `remove()` aus `src/core/db.js`.
+
+**Übernahme aus WAWIWERK:** Gleiche App-Kennung `de.daviddigital.kassenwerk`. Beim ersten Start liest KONTORWERK die alte Datenbank `kassenwerk` und übernimmt alles. Die alte Datenbank bleibt unverändert. Alte JSON-Backups lassen sich unter „Backup wiederherstellen“ einspielen.
 
 ## APK holen
 Jeder Push auf `main` baut die App über GitHub Actions:
-**Actions → „Android-App bauen“ → letzter Lauf → Artifacts → `WAWIWERK-android`** (ZIP mit der APK).
-Die Debug-APK ist mit einem festen Schlüssel signiert – neue Versionen lassen sich über die alte installieren, die Daten bleiben erhalten.
+**Actions → „Android-App bauen“ → letzter Lauf → Artifacts → `KONTORWERK-android`** (ZIP mit der APK).
+Die Web-Version liegt im Artifact `KONTORWERK-web`.
+Die Debug-APK ist mit einem festen Schlüssel signiert – sie lässt sich über WAWIWERK installieren, die Daten bleiben erhalten.
 
-Ein Tag `v1.0.0` erzeugt zusätzlich ein GitHub-Release mit angehängter APK.
+Ein Tag `v2.0.0` erzeugt zusätzlich ein GitHub-Release mit angehängter APK.
 
 ### Play Store (optional)
 Repo-Secrets anlegen, dann baut die Action zusätzlich ein signiertes `.aab`:
@@ -25,19 +56,13 @@ Repo-Secrets anlegen, dann baut die Action zusätzlich ein signiertes `.aab`:
 ## Lokal entwickeln
 ```bash
 npm ci
-npx cap sync android
-cd android && ./gradlew assembleDebug
+npm run dev            # Browser mit Live-Neuladen
+npm run build          # www/index.html bauen
+npm run android        # bauen + Debug-APK
 ```
-Web-Version: `www/index.html` im Browser öffnen.
-
-## Hinweis zum Namen
-Bis v1.0.3 hieß die App KASSENWERK. Die interne Kennung `de.daviddigital.kassenwerk` und der Speichername bleiben bewusst gleich, damit Updates ohne Datenverlust funktionieren.
 
 ## Versionierung
-Bei jeder Auslieferung hochzählen: `TOOL_CONFIG` in `www/index.html` (version + build), `versionName`/`versionCode` in `android/app/build.gradle`, `package.json`, `www/sw.js` (Cache-Name) und `CHANGELOG.md`.
+Bei jeder Auslieferung hochzählen: `src/core/config.js` (version + build), `src/core/changelog.js`, `versionName`/`versionCode` in `android/app/build.gradle`, `package.json`, `public/sw.js` (Cache-Name) und `CHANGELOG.md`.
 
 ## Hinweis zur Kassenführung
-WAWIWERK ist kein Kassensystem und hat **keine zertifizierte TSE** nach Kassensicherungsverordnung. Es ist als Verkaufs- und Lagerhilfe gedacht; wie du es steuerlich einsetzen darfst, bitte mit der Steuerberatung klären.
-
----
-© david.digital
+KONTORWERK ist kein zertifiziertes Kassensystem und hat **keine TSE** nach Kassensicherungsverordnung. Wie du es steuerlich einsetzen darfst, bitte mit der Steuerberatung klären.

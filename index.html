@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="application-name" content="KONTORWERK">
+<meta name="theme-color" id="themeColor" content="#ffffff">
+<title>KONTORWERK — david.digital</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+</head>
+<body>
+
+<aside class="sidebar" id="sidebar">
+  <div class="brand">
+    <div class="brand-logo">K</div>
+    <div><h1><span>KONTORWERK</span></h1><small id="shopNameSide">david.digital</small></div>
+  </div>
+  <nav id="sideNav"></nav>
+  <div class="side-foot" id="sideVersion"></div>
+</aside>
+
+<header class="topbar">
+  <div class="brand">
+    <div class="brand-logo">K</div>
+    <div><h1><span>KONTORWERK</span></h1><small id="shopNameTop">david.digital</small></div>
+  </div>
+  <div class="page-title" id="pageTitle"></div>
+  <div class="top-actions">
+    <button class="icon-btn" id="themeBtn" title="Design wechseln">🌙</button>
+  </div>
+</header>
+
+<main class="container" id="main"></main>
+
+<nav class="bottomnav" id="nav"></nav>
+
+<div class="overlay" id="overlay"></div>
+<div class="modal" id="modal"><div class="modal-head"><h3 id="mTitle"></h3><button class="x-btn" id="mClose">✕</button></div><div class="modal-body" id="mBody"></div><div class="modal-foot" id="mFoot"></div></div>
+<div class="lightbox" id="lightbox"><div class="lb-head"><b id="lbTitle"></b><button id="lbClose">✕</button></div><div class="lb-stage" id="lbStage"><img id="lbImg" alt=""><button class="lb-nav lb-prev hidden" id="lbPrev">‹</button><button class="lb-nav lb-next hidden" id="lbNext">›</button></div><div class="lb-hint"><div class="lb-dots" id="lbDots"></div><span id="lbHintTxt">Doppeltippen oder mit zwei Fingern zoomen · Tippen schließt</span></div></div>
+<div class="toast" id="toast"></div>
+<div id="printArea"></div>
+
+<script type="module" src="/src/main.js"></script>
+</body>
+</html>

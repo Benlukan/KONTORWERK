@@ -1,6 +1,6 @@
 {
   "appId": "de.daviddigital.kassenwerk",
-  "appName": "WAWIWERK",
+  "appName": "KONTORWERK",
   "webDir": "www",
   "backgroundColor": "#f0f2f8",
   "android": { "backgroundColor": "#f0f2f8" }
