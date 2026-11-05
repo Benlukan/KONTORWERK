@@ -1,11 +1,14 @@
 {
-  "name": "wawiwerk",
-  "version": "1.2.0",
+  "name": "kontorwerk",
+  "version": "2.0.0",
   "private": true,
-  "description": "WAWIWERK – Produkte, Lager & Verkauf für selbstgemachte Produkte",
+  "description": "KONTORWERK – modulares ERP für Maker: Warenwirtschaft, Verkauf, Kontakte und mehr",
   "scripts": {
-    "sync": "cap sync",
-    "android": "cap sync android && cd android && ./gradlew assembleDebug",
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "sync": "vite build && cap sync",
+    "android": "vite build && cap sync android && cd android && ./gradlew assembleDebug",
     "icons": "capacitor-assets generate --android --iconBackgroundColor '#0d1117' --iconBackgroundColorDark '#0d1117' --splashBackgroundColor '#f0f2f8' --splashBackgroundColorDark '#0d1117'"
   },
   "dependencies": {
@@ -19,6 +22,9 @@
   "devDependencies": {
     "@capacitor/assets": "^3.0.5",
     "@capacitor/cli": "^8.6.0",
-    "@fontsource/inter": "^5.2.0"
-  }
+    "@fontsource/inter": "^5.2.0",
+    "vite": "^8.3.6",
+    "vite-plugin-singlefile": "^2.3.4"
+  },
+  "type": "module"
 }

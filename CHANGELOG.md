@@ -1,5 +1,17 @@
 # Changelog
 
+## v2.0.0 (Build 7) – 05.11.2026
+- **Neuer Name: KONTORWERK** – aus WAWIWERK wird ein modulares ERP; WAWIWERK lebt als Modul „Warenwirtschaft & Verkauf“ weiter
+- **Module:** Kern (Übersicht, Kontakte, Einstellungen) + Warenwirtschaft & Verkauf; unter „Einstellungen → Module“ einzeln ein- und ausschaltbar, mit Abhängigkeiten
+- Geplante Module (Dokumente, Buchhaltung/EÜR, Unternehmerlohn, E-Commerce, Produktion, Versand) sind schon sichtbar und mit ihrer Phase gekennzeichnet
+- **Übersicht:** Kleinunternehmer-Wächter für das laufende Jahr (100.000 €) und das Vorjahr (25.000 €) mit Warnungen; Umsätze außerhalb der App (z. B. Etsy) nachtragbar; Kennzahlen Umsatz, Lager, Kontakte
+- **Kontakte:** Kunden und Lieferanten mit Adresse, E-Mail, Telefon, Notiz, fortlaufender Nummer (K1001 / L1001), Suche, CSV-Export
+- **Firmendaten:** Inhaber, E-Mail, Telefon, Steuernummer
+- **PC:** Seitenleiste mit allen Bereichen, Seitentitel oben; Handy: untere Leiste + „Mehr“
+- **Daten:** eigene Tabelle je Bereich (Kontakte, Kategorien, Produkte, Lagerbewegungen, Belege, Tagesabschlüsse) mit Abgleich-Feldern – Grundlage für den Geräte-Abgleich in Phase 2
+- **Übernahme:** vorhandene WAWIWERK-Daten werden beim ersten Start automatisch übernommen (gleiche App-Kennung, Update ohne Datenverlust); alte WAWIWERK-Backups lassen sich weiter einspielen
+- Technik: Vite-Build zu einer einzigen `www/index.html`, Code aufgeteilt in `src/core` und `src/modules`
+
 ## v1.2.0 (Build 6) – 05.11.2026
 - Bis zu 8 Fotos pro Produkt; mehrere Fotos auf einmal auswählbar
 - Erstes Foto ist das Titelbild (Kachel & Liste), ★ macht ein anderes Foto zum Titelbild, ✕ entfernt ein Foto

@@ -1,0 +1,62 @@
+/* ═══════════════ KONTORWERK – Shell, Kern-Ansichten ═══════════════ */
+
+/* Seitenleiste (PC) – auf dem Handy ausgeblendet */
+.sidebar{display:none}
+.side-group{font-size:.66rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:700;padding:16px 12px 6px}
+.side-link{display:flex;align-items:center;gap:10px;width:100%;padding:9px 12px;border:none;background:none;border-radius:10px;color:var(--text);font-weight:600;font-size:.88rem;text-align:left;position:relative}
+.side-link i{font-style:normal;font-size:1.05rem;width:22px;text-align:center}
+.side-link:hover{background:var(--card2)}
+.side-link.active{background:var(--primary-soft);color:var(--primary)}
+.side-link .nav-dot{position:static;margin-left:auto}
+.side-foot{margin-top:auto;padding:12px;font-size:.72rem;color:var(--muted)}
+
+@media (min-width:1024px){
+  body{padding-bottom:0}
+  .sidebar{display:flex;flex-direction:column;position:fixed;top:0;bottom:0;left:0;width:228px;z-index:60;background:var(--card);border-right:1px solid var(--border);padding:calc(var(--safe-t) + 12px) 10px 10px;overflow-y:auto}
+  .sidebar .brand{padding:4px 6px 8px}
+  .topbar,.container{margin-left:228px}
+  .topbar .brand{visibility:hidden}
+  .bottomnav{display:none}
+  .fab{bottom:24px;right:24px}
+  .toast{bottom:28px}
+  .modal{left:calc(50% + 114px)}
+}
+
+/* Seitentitel in der Kopfzeile (PC) */
+.page-title{display:none;font-size:1.1rem;font-weight:800}
+@media (min-width:1024px){.page-title{display:block}.topbar{justify-content:space-between}}
+
+/* „Mehr“-Menü (Handy) */
+.menu-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px}
+.menu-tile{display:flex;flex-direction:column;align-items:flex-start;gap:6px;padding:14px;border-radius:var(--radius);border:1px solid var(--border);background:var(--card);box-shadow:var(--shadow);color:var(--text);text-align:left;position:relative}
+.menu-tile i{font-style:normal;font-size:1.5rem}
+.menu-tile b{font-size:.9rem}
+.menu-tile small{font-size:.72rem;color:var(--muted);line-height:1.35}
+.menu-tile.planned{opacity:.6;box-shadow:none;background:var(--card2)}
+.menu-tile .badge{position:absolute;top:10px;right:10px}
+
+/* Umsatzwächter */
+.meter{margin:10px 0 4px}
+.meter-track{height:12px;border-radius:99px;background:var(--card2);border:1px solid var(--border);overflow:hidden}
+.meter-fill{height:100%;border-radius:99px;background:var(--ok);transition:width .6s cubic-bezier(.4,0,.2,1)}
+.meter-fill.warn{background:var(--warn)}
+.meter-fill.danger{background:var(--danger)}
+.meter-legend{display:flex;justify-content:space-between;font-size:.75rem;color:var(--muted);margin-top:5px}
+.watch{display:grid;grid-template-columns:1fr;gap:12px}
+@media (min-width:800px){.watch{grid-template-columns:1fr 1fr}}
+.watch .card h4{font-size:.85rem;font-weight:700;display:flex;justify-content:space-between;gap:8px}
+.watch .card .big{font-size:1.4rem;font-weight:800;margin-top:6px;font-variant-numeric:tabular-nums}
+.alert{border-radius:12px;padding:12px 14px;font-size:.82rem;line-height:1.5;margin-top:12px}
+.alert.warn{background:var(--warn-soft);color:#92400e}
+.alert.danger{background:var(--danger-soft);color:var(--danger)}
+[data-theme="dark"] .alert.warn{color:var(--warn)}
+
+/* Module in den Einstellungen */
+.mod-row{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--border)}
+.mod-row:last-child{border-bottom:none}
+.mod-row .mi{width:40px;height:40px;border-radius:11px;background:var(--primary-soft);display:grid;place-items:center;font-size:1.25rem;flex-shrink:0}
+.mod-row .mm{flex:1;min-width:0}
+.mod-row b{font-size:.9rem;display:block}
+.mod-row small{font-size:.74rem;color:var(--muted);display:block;line-height:1.4}
+.mod-row.planned .mi{filter:grayscale(1);opacity:.6}
+.toggle input:disabled+span{opacity:.45}
