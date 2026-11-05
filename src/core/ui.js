@@ -21,10 +21,12 @@ export function openModal(title, body, foot, onClose) {
   $('#mBody').scrollTop = 0; modalOnClose = onClose || null;
 }
 export function closeModal() {
-  $('#modal').classList.remove('show');
+  $('#modal').classList.remove('show', 'wide');
   if (!sheetOpen()) $('#overlay').classList.remove('show');
   const f = modalOnClose; modalOnClose = null; if (f) f();
 }
+/** Breiter Dialog (z. B. Dokument-Editor am PC) */
+export const wideModal = () => $('#modal').classList.add('wide');
 export const modalOpen = () => $('#modal').classList.contains('show');
 
 export function confirmBox(title, text, okLabel, danger) {

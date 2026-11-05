@@ -12,8 +12,10 @@ const UMSATZ_ARTEN = new Set(['bon', 'rechnung']);
 export function umsatzJahr(y) {
   let inApp = 0;
   T.beleg.forEach(b => {
-    if (!UMSATZ_ARTEN.has(b.art) || b.storno) return;
-    if (new Date(b.ts).getFullYear() === y) inApp += b.total || 0;
+    if (b.storno || b.status === 'entwurf' || new Date(b.ts).getFullYear() !== y) return;
+    if (UMSATZ_ARTEN.has(b.art)) inApp += b.total || 0;
+    // eigenständige Gutschrift (z. B. Rücknahme) mindert den Umsatz; Storno-Gutschriften nicht – dort zählt die Rechnung schon nicht mehr
+    else if (b.art === 'gutschrift' && !b.stornoVon) inApp -= b.total || 0;
   });
   const extra = K.settings.umsatzExtra[y] || 0;
   return {inApp, extra, total: inApp + extra};

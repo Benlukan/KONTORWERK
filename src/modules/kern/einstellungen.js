@@ -30,6 +30,7 @@ export const html = `
       <div class="switch"><div><b>Mindestbestand (Standard)</b><small>Warnung ab diesem Bestand</small></div><input class="input" id="setMin" type="number" min="0" style="width:90px" inputmode="numeric"></div>
       <div class="switch"><div><b>Vibration</b><small>Kurzes Feedback beim Hinzufügen</small></div><label class="toggle"><input type="checkbox" id="setHaptic"><span></span></label></div>
     </div>
+    <div id="modSettings"></div>
     <div class="section-title">🔌 Module <span class="muted">einzeln ein- und ausschaltbar</span></div>
     <div class="card" style="padding:4px 16px" id="modList"></div>
     <div class="section-title">🔄 Geräte-Abgleich <span class="muted">PC und Handy mit denselben Daten</span></div>
@@ -123,10 +124,14 @@ export function renderEinstellungen() {
   $('#footerVersion').textContent = `v${TOOL_CONFIG.version} · Build ${TOOL_CONFIG.build}`;
   const wv = (navigator.userAgent.match(/Chrome\/(\d+)/) || [])[1];
   $('#verSub').textContent = `Version ${TOOL_CONFIG.version} (Build ${TOOL_CONFIG.build})${wv ? ' · WebView ' + wv : ''}`;
+  modules().filter(m => m.settings).forEach(m => { const on = isActive(m.id); $('#ms-' + m.id).classList.toggle('hidden', !on); if (on) m.settings.render(); });
   renderSync(); renderModules(); renderData(); applyTheme();
 }
 
 export function initEinstellungen() {
+  // Einstellungen der Module einhängen
+  $('#modSettings').innerHTML = modules().filter(m => m.settings).map(m => `<div id="ms-${m.id}">${m.settings.html}</div>`).join('');
+  modules().filter(m => m.settings).forEach(m => m.settings.init());
   const bind = (sel, key, fn, ev = 'change') => $(sel).addEventListener(ev, e => {
     K.settings[key] = fn(e.target); saveSettings();
     if (key === 'klein') renderEinstellungen();
@@ -150,7 +155,7 @@ export function initEinstellungen() {
     fr.onload = async () => {
       try {
         const b = parseBackup(fr.result), n = b.summary;
-        const what = `${n.products} Produkte, ${n.categories} Kategorien, ${n.sales} Belege${n.contacts ? `, ${n.contacts} Kontakte` : ''}`;
+        const what = `${n.products} Produkte, ${n.categories} Kategorien, ${n.sales} Belege${n.contacts ? `, ${n.contacts} Kontakte` : ''}${n.docs ? `, ${n.docs} archivierte Dateien` : ''}`;
         if (!await confirmBox('Backup wiederherstellen?', `${b.kind}-Backup: ${what} werden geladen. <b>Alle aktuellen Daten werden ersetzt.</b>${connected() ? ' Danach wird mit dem Server zusammengeführt – neuere Daten vom Server bleiben erhalten.' : ''}`, 'Wiederherstellen', true)) return;
         await restoreBackup(b); toast('Backup wiederhergestellt'); refreshApp('einstellungen');
       } catch (err) { toast('Datei ungültig: ' + err.message, true); }

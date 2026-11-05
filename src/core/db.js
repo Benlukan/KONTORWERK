@@ -3,16 +3,29 @@
  * damit die Oberfläche synchron lesen kann. Jede Änderung geht über put()/remove() und bekommt
  * die Abgleich-Felder erstellt / geaendert / geraet. Gelöschte Datensätze bleiben als
  * Grabstein ({id, geloescht:true}) erhalten – nötig für den späteren Geräte-Abgleich.
+ *
+ * Dateien (Fotos/PDFs im Belegarchiv) liegen im eigenen Store „datei“ und werden NICHT in den
+ * Speicher geladen (alte Tablets). Zugriff nur asynchron über getFile()/putFile().
  */
 import {TOOL_CONFIG} from './config.js';
 import {uid} from './util.js';
 
-export const TABLES = ['kontakt', 'kategorie', 'produkt', 'lagerbewegung', 'beleg', 'tagesabschluss'];
+export const TABLES = ['kontakt', 'kategorie', 'produkt', 'lagerbewegung', 'beleg', 'tagesabschluss', 'dokument'];
+export const FILES = 'datei';
+const DB_VERSION = 2;
 
 export const DEFAULT_SETTINGS = {
   // Firma
   shopName: '', ownerName: '', address: '', email: '', phone: '', taxNo: '',
   footer: 'Vielen Dank für Ihren Einkauf!',
+  web: '', logo: '', // Firmenlogo als Bild-URL (data:) für Rechnungen
+  // Bank (Rechnungen)
+  bankInhaber: '', iban: '', bic: '', bankName: '',
+  zahlungsziel: 14, // Tage
+  // Nummernkreise der Dokumente: Präfix je Art
+  nrPrefix: {rechnung: 'RE', angebot: 'AN', lieferschein: 'LS', gutschrift: 'GS'},
+  // Standardtexte der Dokumente
+  docTexte: {},
   // Steuer & Verkauf
   klein: true, taxDefault: 19, allowNegative: false, minDefault: 2, haptic: true,
   umsatzExtra: {}, // {Jahr: Cent} – Umsätze außerhalb von KONTORWERK (z. B. Etsy, bis das E-Commerce-Modul kommt)
@@ -44,11 +57,12 @@ function req(r) { return new Promise((res, rej) => { r.onsuccess = () => res(r.r
 export async function openDb() {
   try {
     idb = await new Promise((res, rej) => {
-      const r = indexedDB.open(TOOL_CONFIG.dbName, 1);
+      const r = indexedDB.open(TOOL_CONFIG.dbName, DB_VERSION);
       r.onupgradeneeded = () => {
         const d = r.result;
         TABLES.forEach(t => { if (!d.objectStoreNames.contains(t)) d.createObjectStore(t, {keyPath: 'id'}); });
         if (!d.objectStoreNames.contains('meta')) d.createObjectStore('meta');
+        if (!d.objectStoreNames.contains(FILES)) d.createObjectStore(FILES, {keyPath: 'id'});
       };
       r.onsuccess = () => res(r.result);
       r.onerror = () => rej(r.error);
@@ -70,7 +84,8 @@ async function load() {
     rows.forEach(r => { idx[t].set(r.id, r); if (!r.geloescht) T[t].push(r); });
   }
   const m = tx.objectStore('meta');
-  const [settings, deviceId, migratedFrom, settingsTs, sync] = await Promise.all(['settings', 'deviceId', 'migratedFrom', 'settingsTs', 'sync'].map(k => req(m.get(k))));
+  const [settings, deviceId, migratedFrom, settingsTs, sync, dateiHoch] = await Promise.all(['settings', 'deviceId', 'migratedFrom', 'settingsTs', 'sync', 'dateiHoch'].map(k => req(m.get(k))));
+  K.meta.dateiHoch = dateiHoch || [];
   K.settings = mergeSettings(settings);
   K.meta.migratedFrom = migratedFrom || null;
   K.meta.settingsTs = settingsTs || 0;
@@ -83,6 +98,8 @@ export function mergeSettings(s) {
   const out = {...structuredClone(DEFAULT_SETTINGS), ...(s || {})};
   out.modules = {...(s && s.modules || {})};
   out.umsatzExtra = {...(s && s.umsatzExtra || {})};
+  out.nrPrefix = {...DEFAULT_SETTINGS.nrPrefix, ...(s && s.nrPrefix || {})};
+  out.docTexte = {...(s && s.docTexte || {})};
   return out;
 }
 
@@ -103,10 +120,11 @@ export function put(t, rec) {
   return rec;
 }
 
-/** Löschen = Grabstein setzen (bleibt für den Abgleich erhalten). */
+/** Löschen = Grabstein setzen (bleibt für den Abgleich erhalten). Bei Dokumenten bleibt die Datei-id im Grabstein. */
 export function remove(t, id) {
   const ex = idx[t].get(id); if (!ex || ex.geloescht) return;
   const tomb = {id, geloescht: true, erstellt: ex.erstellt, geaendert: Date.now(), geraet: K.deviceId};
+  if (ex.dateiId) tomb.dateiId = ex.dateiId;
   idx[t].set(id, tomb);
   const i = T[t].indexOf(ex); if (i >= 0) T[t].splice(i, 1);
   queue(t, tomb); changed();
@@ -137,6 +155,35 @@ export function applyRemote(t, rec) {
   queue(t, rec);
   return true;
 }
+/* ─── Dateien (eigener Store, nicht im Speicher) ─── */
+function fileTx(mode, fn) {
+  return new Promise((res, rej) => {
+    if (!idb) return rej(new Error('Kein Speicher verfügbar'));
+    const tx = idb.transaction(FILES, mode); const s = tx.objectStore(FILES); let out;
+    Promise.resolve(fn(s)).then(v => { out = v; });
+    tx.oncomplete = () => res(out); tx.onerror = tx.onabort = () => { listeners.forEach(f => f(tx.error)); rej(tx.error); };
+  });
+}
+/** Datei speichern: {data (data-URL), mime, name} → Datensatz ohne data */
+export async function putFile(f) {
+  const now = Date.now();
+  const rec = {id: f.id || uid(), data: f.data, mime: f.mime || '', name: f.name || '', size: f.size || (f.data || '').length, erstellt: f.erstellt || now, geaendert: now, geraet: K.deviceId};
+  await fileTx('readwrite', s => { s.put(rec); });
+  changed();
+  const {data, ...meta} = rec; return meta;
+}
+export const getFile = id => fileTx('readonly', s => req(s.get(id))).then(r => r && !r.geloescht ? r : null);
+/** Datei löschen (Grabstein, Inhalt wird entfernt) */
+export const removeFile = id => fileTx('readwrite', s => { s.put({id, geloescht: true, geaendert: Date.now(), geraet: K.deviceId}); });
+/** Datei von einem anderen Gerät übernehmen (Dateien ändern sich nie, nur Löschen zählt) */
+export async function applyRemoteFile(rec) {
+  const ex = await fileTx('readonly', s => req(s.get(rec.id)));
+  if (ex && (ex.geloescht || (ex.geaendert || 0) >= (rec.geaendert || 0))) return false;
+  await fileTx('readwrite', s => { s.put(rec); });
+  return true;
+}
+export const allFiles = () => idb ? fileTx('readonly', s => req(s.getAll())) : Promise.resolve([]);
+
 /** Alle Datensätze (inkl. Grabsteine) als [tabelle, datensatz] */
 export const allRecords = () => TABLES.flatMap(t => [...idx[t].values()].map(r => [t, r]));
 
@@ -161,7 +208,7 @@ export function flush() {
 }
 
 /** Alles ersetzen (Backup-Import, Migration, „Alle Daten löschen“). tables: {tabelle: [Datensätze]} */
-export async function replaceAll(tables, settings, extraMeta = {}) {
+export async function replaceAll(tables, settings, extraMeta = {}, files = null) {
   pending.clear(); clearTimeout(flushTimer);
   const now = Date.now();
   TABLES.forEach(t => { T[t].length = 0; idx[t].clear(); });
@@ -177,8 +224,10 @@ export async function replaceAll(tables, settings, extraMeta = {}) {
   Object.assign(K.meta, extraMeta);
   if (!idb) return true;
   return new Promise(res => {
-    const tx = idb.transaction([...TABLES, 'meta'], 'readwrite');
+    const tx = idb.transaction([...TABLES, 'meta', FILES], 'readwrite');
     TABLES.forEach(t => { const s = tx.objectStore(t); s.clear(); idx[t].forEach(r => s.put(JSON.parse(JSON.stringify(r)))); });
+    if (files) { const fs = tx.objectStore(FILES); fs.clear(); files.forEach(f => fs.put(f)); }
+    tx.objectStore('meta').put([], 'dateiHoch'); K.meta.dateiHoch = [];
     const m = tx.objectStore('meta');
     m.put(JSON.parse(JSON.stringify(K.settings)), 'settings');
     m.put(K.deviceId, 'deviceId');

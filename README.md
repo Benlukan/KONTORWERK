@@ -15,7 +15,7 @@ Konzept & Phasenplan: [KONTORWERK – ERP-Konzept](https://claude.ai/artifact/2g
 | Kern: Übersicht (Kleinunternehmer-Wächter), Kontakte, Einstellungen | ✅ v2.0 | – |
 | Warenwirtschaft & Verkauf: Produkte, Kategorien, Lager, Verkauf mit Bon, Berichte, Tagesabschluss | ✅ v2.0 | Kern |
 | Geräte-Abgleich (PocketBase) | ✅ v2.1 | – |
-| Dokumente: Rechnung, Angebot, Lieferschein, Belegarchiv | Phase 2 | – |
+| Dokumente: Rechnung, Angebot, Lieferschein, Gutschrift (PDF), Belegarchiv | ✅ v2.3 | – |
 | Buchhaltung (EÜR, DATEV-Export) | Phase 3 | Dokumente |
 | Unternehmerlohn (Privatentnahmen) | Phase 3 | Buchhaltung |
 | E-Commerce (Etsy) | Phase 4 | Warenwirtschaft |
@@ -32,6 +32,7 @@ src/main.js           Start, Modul-Reihenfolge, Zurück-Taste
 src/core/             Kern: Datenbank, Modul-Registry, Shell, Dialoge, Backup, Übernahme aus WAWIWERK
 src/modules/kern/     Übersicht, Kontakte, Einstellungen, „Mehr“
 src/modules/wawi/     Warenwirtschaft & Verkauf (Verkauf, Produkte, Lager, Berichte)
+src/modules/dokumente/  Rechnungen, Angebote, Lieferscheine, Gutschriften (PDF) und Belegarchiv
 src/modules/geplant.js  Geplante Module (Manifest mit Phase und Abhängigkeiten)
 server/               PocketBase-Schema, Einrichtungs-Skript, Anleitung (Oracle Cloud)
 public/               Schriften, Icons, Manifest, Service Worker
@@ -40,7 +41,7 @@ www/                  Build-Ausgabe (nicht im Repo) – eine einzige index.html
 
 **Neues Modul:** Ordner unter `src/modules/`, `registerModule({id, name, icon, desc, requires, views, init})` aufrufen und in `src/main.js` importieren. Jede Ansicht bringt ihr HTML und eine `render()`-Funktion mit.
 
-**Daten:** IndexedDB `kontorwerk`, eine Tabelle je Bereich (`kontakt`, `kategorie`, `produkt`, `lagerbewegung`, `beleg`, `tagesabschluss`) plus `meta` (Einstellungen, Geräte-ID). Jeder Datensatz trägt `erstellt`, `geaendert`, `geraet`; Löschen setzt einen Grabstein (`geloescht: true`). Schreiben nur über `put()` / `remove()` aus `src/core/db.js`.
+**Daten:** IndexedDB `kontorwerk` (Version 2), eine Tabelle je Bereich (`kontakt`, `kategorie`, `produkt`, `lagerbewegung`, `beleg` – Bons und Dokumente, `tagesabschluss`, `dokument` – Belegarchiv) plus `meta` (Einstellungen, Geräte-ID) und `datei` (Fotos/PDFs, nicht im Speicher). Jeder Datensatz trägt `erstellt`, `geaendert`, `geraet`; Löschen setzt einen Grabstein (`geloescht: true`). Schreiben nur über `put()` / `remove()` aus `src/core/db.js`.
 
 **Geräte-Abgleich:** `src/core/sync.js`. Server-Sammlung `kw_daten` (eine Zeile je Datensatz, id fest aus Tabelle + Datensatz-id). Holen: alles seit dem letzten Abgleich von anderen Geräten; Hochladen: alle eigenen Änderungen seit dem letzten Hochladen, per Batch-Upsert. Jüngere Änderung gewinnt. Einrichtung: [server/ANLEITUNG.md](server/ANLEITUNG.md).
 

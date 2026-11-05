@@ -1,5 +1,21 @@
 # Changelog
 
+## v2.3.0 (Build 13) – 05.11.2026
+- **Modul Dokumente** (Phase 2): Rechnung, Angebot, Lieferschein, Gutschrift
+  - Editor mit Empfänger aus den Kontakten (oder neu, optional als Kontakt speichern), Produkten oder freien Positionen, Leistungs-/Lieferdatum, Zahlungsziel, Gültigkeit, Einleitungs- und Schlusstext, interner Notiz
+  - Entwurf → **Abschließen**: fortlaufende Nummer je Art und Jahr (`RE-2026-0001`, höchste bekannte Nummer aller Geräte + 1), Absenderdaten werden eingefroren, Dokument danach unveränderbar (GoBD)
+  - Rechnung: bezahlt markieren (Datum, Zahlart), **Storno** erzeugt eine Storno-Gutschrift und bucht den Bestand zurück; Angebot/Lieferschein → Rechnung; Kopie als Entwurf
+  - Bestand beim Abschließen von Rechnung/Lieferschein optional abbuchen (keine doppelte Abbuchung bei Lieferschein → Rechnung)
+  - **PDF** (jsPDF, A4 nach DIN 5008): Logo, Absender-Rückzeile, Anschrift, Infoblock, Positionstabelle mit Seitenumbruch, § 19-Hinweis bzw. enthaltene USt, Zahlungshinweis mit Verwendungszweck, Fußzeile mit Steuernummer und Bankverbindung, Wasserzeichen „ENTWURF“ für Vorschauen
+  - Liste mit Filter nach Art und Status, Suche, Kennzahlen (offen, überfällig, bezahlt); Hinweis-Punkt bei überfälligen Rechnungen
+- **Belegarchiv**: Fotos (Kamera) oder PDFs bis 10 MB, Belegdatum, Betrag, Lieferant, Kategorie (EÜR-nah), Titel, Notiz; Filter nach Jahr und Kategorie, Suche, Summen
+- Dateien liegen im eigenen IndexedDB-Store `datei` und werden nur bei Bedarf geladen (schont alte Tablets); Datenbank-Version 2 (Upgrade automatisch)
+- Geräte-Abgleich überträgt Archiv-Dateien (einmalig je Datei) und Löschungen; Backups enthalten die Dateien
+- Übersicht: Kennzahl „Offene Rechnungen“; Kleinunternehmer-Wächter zählt abgeschlossene Rechnungen (ohne Stornos), eigenständige Gutschriften mindern den Umsatz
+- Einstellungen → Dokumente: Firmenlogo, Website, Bankverbindung, Zahlungsziel, Nummern-Präfixe, Standardtexte je Dokumentart
+- Module können eigene Einstellungen und Kennzahlen für die Übersicht beisteuern
+- Alte WebViews: `globalThis` nachgerüstet, Dialogbreite ohne `min()`
+
 ## v2.2.2 (Build 12) – 05.11.2026
 - **Ältere Tablets** (WebView ohne CSS Grid, vor Chrome 57): Ersatz-Layout mit Flexbox für Produktkacheln, Kennzahlen, Grenzen-Wächter, Warenkorb neben den Produkten, Zahlarten, „Mehr“-Menü und Berichte
 - Emojis aus Unicode 10/11 (🧾 🧩 🧑 🧮), die ältere Geräte als leere Kästchen zeigen, durch ältere ersetzt (📃 🔌 👤 🔢)
