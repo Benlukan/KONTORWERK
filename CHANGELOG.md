@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.2.0 (Build 6) – 05.11.2026
+- Bis zu 8 Fotos pro Produkt; mehrere Fotos auf einmal auswählbar
+- Erstes Foto ist das Titelbild (Kachel & Liste), ★ macht ein anderes Foto zum Titelbild, ✕ entfernt ein Foto
+- Großansicht: zwischen den Fotos wischen oder ‹ › tippen, Zähler „2 / 5“ und Punkte; am PC Pfeiltasten
+- Bestehende Produktfotos werden automatisch übernommen
+
 ## v1.1.0 (Build 5) – 04.11.2026
 - **Neuer Name: WAWIWERK** (vorher KASSENWERK) – kleine Warenwirtschaft für Produkte, Lager & Verkauf
 - Neues App-Icon (Warenstapel), Logo „W“, Reiter „Kasse“ → „Verkauf“

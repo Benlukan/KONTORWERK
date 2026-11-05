@@ -1,5 +1,5 @@
 // WAWIWERK Service Worker – offline nutzbar (Web-Version)
-const CACHE = 'wawiwerk-v1.1.0-b5';
+const CACHE = 'wawiwerk-v1.2.0-b6';
 const FILES = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png', './apple-touch-icon.png',
   './fonts/inter-latin-400-normal.woff2', './fonts/inter-latin-500-normal.woff2', './fonts/inter-latin-600-normal.woff2', './fonts/inter-latin-700-normal.woff2', './fonts/inter-latin-800-normal.woff2'];
 self.addEventListener('install', e => { e.waitUntil(caches.open(CACHE).then(c => c.addAll(FILES))); self.skipWaiting(); });

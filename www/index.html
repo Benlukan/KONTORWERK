@@ -10,7 +10,7 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon-192.png">
 <script>
-const TOOL_CONFIG = { name: "WAWIWERK", version: "1.1.0", build: 5, emoji: "📦", dbName: "kassenwerk", stateKey: "state_v1" };
+const TOOL_CONFIG = { name: "WAWIWERK", version: "1.2.0", build: 6, emoji: "📦", dbName: "kassenwerk", stateKey: "state_v1" };
 </script>
 <style>
 @font-face{font-family:"Inter";font-weight:400;font-display:swap;src:url(fonts/inter-latin-400-normal.woff2) format("woff2")}
@@ -315,6 +315,21 @@ input,select,textarea{font-family:inherit;font-size:16px}
 .info-box{background:var(--indigo-soft);border:1px solid rgba(99,102,241,.25);border-radius:12px;padding:12px 14px;font-size:.8rem;line-height:1.5;color:var(--text)}
 .info-box b{color:var(--indigo)}
 .img-pick{display:flex;align-items:center;gap:12px}
+.photos{display:flex;gap:8px;overflow-x:auto;padding:2px 2px 6px;scrollbar-width:none}
+.photos::-webkit-scrollbar{display:none}
+.ph{position:relative;width:76px;height:76px;flex-shrink:0;border-radius:12px;overflow:hidden;background:var(--card2);border:2px solid var(--border);cursor:zoom-in}
+.ph.first{border-color:var(--primary)}
+.ph img{width:100%;height:100%;object-fit:cover}
+.ph .ph-tag{position:absolute;left:4px;bottom:4px;font-size:.58rem;font-weight:800;background:var(--primary);color:#fff;padding:1px 5px;border-radius:5px}
+.ph button{position:absolute;top:3px;width:24px;height:24px;border-radius:8px;border:none;background:rgba(0,0,0,.6);color:#fff;font-size:.72rem;display:grid;place-items:center}
+.ph .ph-del{right:3px}.ph .ph-star{left:3px}
+.ph-add{width:76px;height:76px;flex-shrink:0;border-radius:12px;border:2px dashed var(--primary-border);background:var(--primary-soft);color:var(--primary);display:flex;flex-direction:column;align-items:center;justify-content:center;font-weight:700;font-size:.68rem;gap:2px;cursor:pointer}
+.ph-add span{font-size:1.4rem;line-height:1}
+.lb-nav{position:absolute;top:50%;transform:translateY(-50%);z-index:2;width:44px;height:44px;border-radius:50%;border:none;background:rgba(255,255,255,.14);color:#fff;font-size:1.4rem;display:grid;place-items:center}
+.lb-prev{left:10px}.lb-next{right:10px}
+.lb-dots{display:flex;justify-content:center;gap:6px;margin-bottom:8px}
+.lb-dots i{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.3)}
+.lb-dots i.on{background:#fff}
 .img-prev{width:76px;height:76px;border-radius:14px;display:grid;place-items:center;font-size:2.2rem;overflow:hidden;background:var(--primary-soft);flex-shrink:0}
 .img-prev img{width:100%;height:100%;object-fit:cover}
 
@@ -464,7 +479,7 @@ input,select,textarea{font-family:inherit;font-size:16px}
 
 <div class="overlay" id="overlay"></div>
 <div class="modal" id="modal"><div class="modal-head"><h3 id="mTitle"></h3><button class="x-btn" id="mClose">✕</button></div><div class="modal-body" id="mBody"></div><div class="modal-foot" id="mFoot"></div></div>
-<div class="lightbox" id="lightbox"><div class="lb-head"><b id="lbTitle"></b><button id="lbClose">✕</button></div><div class="lb-stage" id="lbStage"><img id="lbImg" alt=""></div><div class="lb-hint">Doppeltippen oder mit zwei Fingern zoomen · Tippen schließt</div></div>
+<div class="lightbox" id="lightbox"><div class="lb-head"><b id="lbTitle"></b><button id="lbClose">✕</button></div><div class="lb-stage" id="lbStage"><img id="lbImg" alt=""><button class="lb-nav lb-prev hidden" id="lbPrev">‹</button><button class="lb-nav lb-next hidden" id="lbNext">›</button></div><div class="lb-hint"><div class="lb-dots" id="lbDots"></div><span id="lbHintTxt">Doppeltippen oder mit zwei Fingern zoomen · Tippen schließt</span></div></div>
 <div class="toast" id="toast"></div>
 <div id="printArea"></div>
 
@@ -554,7 +569,7 @@ let ui = {view: 'kasse', posCat: 'all', posQ: '', prodSeg: 'p', prodQ: '', stock
 
 function normalize(d) {
   const s = {v: 1, settings: {...DEFAULT_SETTINGS, ...(d.settings || {})}, categories: d.categories || [], products: d.products || [], sales: d.sales || [], moves: d.moves || [], days: d.days || {}};
-  s.products.forEach(p => { if (p.trackStock == null) p.trackStock = true; if (p.active == null) p.active = true; if (p.stock == null) p.stock = 0; });
+  s.products.forEach(p => { if (p.trackStock == null) p.trackStock = true; if (p.active == null) p.active = true; if (p.stock == null) p.stock = 0; if (!Array.isArray(p.photos)) p.photos = p.img ? [{t: p.img, f: p.imgFull || p.img}] : []; });
   return s;
 }
 const catById = id => S.categories.find(c => c.id === id);
@@ -916,7 +931,7 @@ function renderProducts() {
         <div class="li-main"><div class="li-title">${esc(p.name)}</div><div class="li-sub">${p.sku ? 'Nr. ' + esc(p.sku) + ' · ' : ''}${p.cost ? 'EK ' + eur(p.cost) + ' · ' : ''}${p.active ? '' : 'inaktiv'}</div></div>
         <div class="li-end"><b class="num">${eur(p.price)}</b>${stockBadge(p)}</div></button>`).join('')).join('')}</div>`
       : `<div class="card empty"><div>🔍</div><p>Keine Treffer.</p></div>`;
-    $$('#prodList .li').forEach(b => b.onclick = e => { const z = e.target.closest('[data-zoom]'); if (z) { const p = prodById(z.dataset.zoom); return openLightbox(p.imgFull || p.img, p.name); } editProduct(b.dataset.id); });
+    $$('#prodList .li').forEach(b => b.onclick = e => { const z = e.target.closest('[data-zoom]'); if (z) { const p = prodById(z.dataset.zoom); return openLightbox(photosOf(p).map(x => x.f || x.t), p.name); } editProduct(b.dataset.id); });
   } else {
     const cats = sortedCats();
     $('#catList').innerHTML = cats.length ? `<div class="list">${cats.map((c, i) => `<div class="li" style="cursor:default">
@@ -985,14 +1000,25 @@ function resizeFull(file, max = 1600) {
 }
 
 /* ─── BILD-VOLLANSICHT (Lightbox mit Zoom) ─── */
-const LB = {s: 1, x: 0, y: 0, base: null};
+const LB = {s: 1, x: 0, y: 0, list: [], i: 0, title: ''};
 function lbApply() { $('#lbImg').style.transform = `translate(${LB.x}px,${LB.y}px) scale(${LB.s})`; }
 function lbReset() { LB.s = 1; LB.x = 0; LB.y = 0; lbApply(); }
-function openLightbox(src, title) {
-  if (!src) return;
-  $('#lbImg').src = src; $('#lbTitle').textContent = title || ''; lbReset();
-  $('#lightbox').classList.add('show');
+const photosOf = p => (p.photos && p.photos.length) ? p.photos : (p.img ? [{t: p.img, f: p.imgFull || p.img}] : []);
+// list: Array von Bild-URLs (oder ein einzelner String), i: Startindex
+function openLightbox(list, title, i = 0) {
+  list = (Array.isArray(list) ? list : [list]).filter(Boolean); if (!list.length) return;
+  LB.list = list; LB.title = title || ''; $('#lightbox').classList.add('show'); lbShow(i);
 }
+function lbShow(i) {
+  const n = LB.list.length; LB.i = (i + n) % n; $('#lbImg').src = LB.list[LB.i]; lbReset();
+  $('#lbTitle').textContent = LB.title + (n > 1 ? `  ·  ${LB.i + 1} / ${n}` : '');
+  $('#lbPrev').classList.toggle('hidden', n < 2); $('#lbNext').classList.toggle('hidden', n < 2);
+  $('#lbDots').innerHTML = n > 1 ? LB.list.map((_, k) => `<i class="${k === LB.i ? 'on' : ''}"></i>`).join('') : '';
+  $('#lbHintTxt').textContent = n > 1 ? 'Wischen für nächstes Foto · Doppeltippen zoomt · Tippen schließt' : 'Doppeltippen oder mit zwei Fingern zoomen · Tippen schließt';
+}
+$('#lbPrev').onclick = e => { e.stopPropagation(); lbShow(LB.i - 1); };
+$('#lbNext').onclick = e => { e.stopPropagation(); lbShow(LB.i + 1); };
+['touchstart', 'touchend'].forEach(ev => { $('#lbPrev').addEventListener(ev, e => e.stopPropagation()); $('#lbNext').addEventListener(ev, e => e.stopPropagation()); });
 function closeLightbox() { $('#lightbox').classList.remove('show'); }
 const lbOpen = () => $('#lightbox').classList.contains('show');
 $('#lbClose').onclick = closeLightbox;
@@ -1016,8 +1042,15 @@ $('#lbClose').onclick = closeLightbox;
     else if (e.touches.length === 1 && LB.s > 1 && t0.px != null) { LB.x = t0.x + e.touches[0].clientX - t0.px; LB.y = t0.y + e.touches[0].clientY - t0.py; lbApply(); }
   }, {passive: true});
   st.addEventListener('touchend', e => {
-    if (e.touches.length) return; const wasMove = moved; t0 = null;
-    if (wasMove) return;
+    if (e.touches.length) return; const wasMove = moved, start = t0; t0 = null;
+    if (wasMove) {
+      // Wischen zum nächsten/vorigen Foto (nur ungezoomt)
+      if (start && start.px != null && LB.s === 1 && LB.list.length > 1) {
+        const dx = e.changedTouches[0].clientX - start.px, dy = e.changedTouches[0].clientY - start.py;
+        if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy)) lbShow(LB.i + (dx < 0 ? 1 : -1));
+      }
+      return;
+    }
     const now = Date.now(); const tp = e.changedTouches[0];
     if (now - lastTap < 300) { zoomAt(tp.clientX, tp.clientY, LB.s > 1 ? 1 : 2.5); lastTap = 0; clearTimeout(st._t); }
     else { lastTap = now; st._t = setTimeout(() => { if (LB.s === 1) closeLightbox(); }, 300); }
@@ -1032,12 +1065,14 @@ $('#lbClose').onclick = closeLightbox;
 function editProduct(id) {
   const isNew = !id;
   const p = id ? prodById(id) : {name: '', catId: ui.posCat !== 'all' ? ui.posCat : (sortedCats()[0] || {}).id || null, price: null, cost: null, stock: 0, minStock: S.settings.minDefault, sku: '', emoji: '', color: '', img: '', unit: 'Stk', active: true, trackStock: true, tax: S.settings.taxDefault};
-  let img = p.img || '', imgFull = p.imgFull || '', color = p.color || '';
+  let photos = photosOf(p).map(x => ({...x})), color = p.color || '';
+  const MAX_PHOTOS = 8;
   const cats = sortedCats();
   openModal(isNew ? 'Neues Produkt' : 'Produkt bearbeiten', `
-    <div class="img-pick" style="margin-bottom:14px"><div class="img-prev" id="pImgPrev"></div>
-      <div style="display:flex;flex-direction:column;gap:6px;flex:1"><label class="btn btn-sm btn-soft" style="cursor:pointer">📷 Foto wählen<input type="file" accept="image/*" id="pImg" class="hidden"></label>
-      <div style="display:flex;gap:6px"><input class="input" id="pEmoji" value="${esc(p.emoji)}" placeholder="Emoji" maxlength="4" style="width:76px;text-align:center;padding:7px"><button class="btn btn-sm" id="pImgDel" style="flex:1">Foto entfernen</button></div></div></div>
+    <div class="img-pick" style="margin-bottom:10px"><div class="img-prev" id="pImgPrev"></div>
+      <div style="flex:1"><div class="field" style="margin:0"><label>Emoji (ohne Foto)</label><input class="input" id="pEmoji" value="${esc(p.emoji)}" placeholder="z. B. 💡" maxlength="4" style="width:96px;text-align:center;padding:8px"></div></div></div>
+    <div class="field"><label>Fotos <span id="pPhCount" style="text-transform:none;letter-spacing:0;font-weight:500"></span></label><div class="photos" id="pPhotos"></div>
+      <small class="muted" style="font-size:.72rem">Erstes Foto = Titelbild (Kachel & Liste) · ★ macht ein Foto zum Titelbild</small></div>
     <div class="field"><label>Name *</label><input class="input" id="pName" value="${esc(p.name)}" placeholder="z. B. Tischlampe Eiche"></div>
     <div class="field"><label>Kategorie</label><select class="input" id="pCat"><option value="">— Ohne Kategorie —</option>${cats.map(c => `<option value="${c.id}" ${c.id === p.catId ? 'selected' : ''}>${esc(c.emoji || '')} ${esc(c.name)}</option>`).join('')}<option value="__new">＋ Neue Kategorie…</option></select></div>
     <div class="row"><div class="field"><label>Verkaufspreis € *</label><input class="input" id="pPrice" inputmode="decimal" value="${moneyIn(p.price)}" placeholder="0,00"></div>
@@ -1052,8 +1087,27 @@ function editProduct(id) {
     <div class="switch"><div><b>Aktiv im Verkauf</b><small>Inaktive Produkte werden im Verkauf ausgeblendet</small></div><label class="toggle"><input type="checkbox" id="pActive" ${p.active ? 'checked' : ''}><span></span></label></div>
     ${!isNew && p.cost && p.price ? `<div class="info-box" style="margin-top:10px">Marge: <b>${eur(p.price - p.cost)}</b> (${Math.round((p.price - p.cost) / p.price * 100)} %)</div>` : ''}`,
     `${!isNew ? `<button class="btn btn-danger" id="pDel">Löschen</button><button class="btn" id="pDup">Duplizieren</button>` : ''}<button class="btn btn-primary" id="pOk">Speichern</button>`);
-  const prev = () => { const c = catById($('#pCat').value); $('#pImgPrev').style.background = soft(color || (c && c.color) || '#009EB2'); $('#pImgPrev').innerHTML = img ? `<img src="${img}" alt="">` : esc($('#pEmoji').value || (c && c.emoji) || '📦'); $('#pImgPrev').classList.toggle('zoomable', !!img); };
-  $('#pImgPrev').onclick = () => { if (img) openLightbox(imgFull || img, $('#pName').value.trim() || p.name); };
+  const lbTitle = () => $('#pName').value.trim() || p.name;
+  const renderPhotos = () => {
+    $('#pPhCount').textContent = `(${photos.length}/${MAX_PHOTOS})`;
+    $('#pPhotos').innerHTML = photos.map((ph, k) => `<div class="ph ${k === 0 ? 'first' : ''}" data-k="${k}"><img src="${ph.t}" alt="">${k === 0 ? '<span class="ph-tag">Titel</span>' : `<button class="ph-star" data-star="${k}" title="Als Titelbild">★</button>`}<button class="ph-del" data-del="${k}" title="Entfernen">✕</button></div>`).join('')
+      + (photos.length < MAX_PHOTOS ? `<label class="ph-add"><span>＋</span>Foto${photos.length ? 's' : ''}<input type="file" accept="image/*" multiple id="pImg" class="hidden"></label>` : '');
+    $$('#pPhotos .ph').forEach(el => el.onclick = e => {
+      const del = e.target.closest('[data-del]'), star = e.target.closest('[data-star]');
+      if (del) { photos.splice(+del.dataset.del, 1); return renderPhotos(), prev(); }
+      if (star) { const [x] = photos.splice(+star.dataset.star, 1); photos.unshift(x); return renderPhotos(), prev(); }
+      openLightbox(photos.map(x => x.f || x.t), lbTitle(), +el.dataset.k);
+    });
+    if ($('#pImg')) $('#pImg').onchange = async e => {
+      const files = [...e.target.files].slice(0, MAX_PHOTOS - photos.length); if (!files.length) return;
+      if (e.target.files.length > files.length) toast(`Maximal ${MAX_PHOTOS} Fotos pro Produkt`, true);
+      for (const f of files) { try { const [t, full] = await Promise.all([resizeImage(f), resizeFull(f)]); photos.push({t, f: full}); } catch (err) { toast('Ein Bild konnte nicht geladen werden', true); } }
+      renderPhotos(); prev();
+    };
+  };
+  const prev = () => { const c = catById($('#pCat').value); const img = photos[0] && photos[0].t; $('#pImgPrev').style.background = soft(color || (c && c.color) || '#009EB2'); $('#pImgPrev').innerHTML = img ? `<img src="${img}" alt="">` : esc($('#pEmoji').value || (c && c.emoji) || '📦'); $('#pImgPrev').classList.toggle('zoomable', !!img); };
+  $('#pImgPrev').onclick = () => { if (photos.length) openLightbox(photos.map(x => x.f || x.t), lbTitle(), 0); };
+  renderPhotos();
   prev();
   bindSwatches(v => { color = v; prev(); });
   $('#pEmoji').oninput = prev;
@@ -1065,8 +1119,6 @@ function editProduct(id) {
     }
     prev();
   };
-  $('#pImg').onchange = async e => { const f = e.target.files[0]; if (!f) return; try { [img, imgFull] = await Promise.all([resizeImage(f), resizeFull(f)]); prev(); } catch (err) { toast('Bild konnte nicht geladen werden', true); } };
-  $('#pImgDel').onclick = () => { img = ''; imgFull = ''; prev(); };
   if (isNew) setTimeout(() => $('#pName').focus(), 250);
   $('#pOk').onclick = () => {
     const name = $('#pName').value.trim(), price = parseMoney($('#pPrice').value), costRaw = $('#pCost').value.trim(), cost = costRaw ? parseMoney(costRaw) : 0;
@@ -1074,7 +1126,7 @@ function editProduct(id) {
     if (isNaN(price) || price < 0) return toast('Bitte gültigen Preis eingeben', true);
     if (isNaN(cost) || cost < 0) return toast('Ungültiger Einkaufspreis', true);
     const stock = parseInt($('#pStock').value, 10) || 0, min = parseInt($('#pMin').value, 10);
-    const data = {name, price, cost, catId: $('#pCat').value || null, minStock: isNaN(min) ? S.settings.minDefault : min, unit: $('#pUnit').value, sku: $('#pSku').value.trim(), emoji: $('#pEmoji').value.trim(), color, img, imgFull, tax: +$('#pTax').value, trackStock: $('#pTrack').checked, active: $('#pActive').checked};
+    const data = {name, price, cost, catId: $('#pCat').value || null, minStock: isNaN(min) ? S.settings.minDefault : min, unit: $('#pUnit').value, sku: $('#pSku').value.trim(), emoji: $('#pEmoji').value.trim(), color, photos, img: photos[0] ? photos[0].t : '', imgFull: photos[0] ? photos[0].f : '', tax: +$('#pTax').value, trackStock: $('#pTrack').checked, active: $('#pActive').checked};
     if (data.sku && S.products.some(x => x.id !== id && x.sku && x.sku.toLowerCase() === data.sku.toLowerCase())) return toast('Artikelnummer ist schon vergeben', true);
     if (isNew) {
       const np = {id: uid(), created: Date.now(), stock, ...data}; S.products.push(np);
@@ -1090,7 +1142,7 @@ function editProduct(id) {
       if (!await confirmBox('Produkt löschen?', `„${esc(p.name)}“ wird gelöscht. Bisherige Verkäufe bleiben in den Berichten erhalten.`, 'Löschen', true)) return;
       S.products = S.products.filter(x => x.id !== id); cart.lines = cart.lines.filter(l => l.pid !== id); save(); render();
     };
-    $('#pDup').onclick = () => { const np = {...p, id: uid(), name: p.name + ' (Kopie)', sku: '', stock: 0, created: Date.now()}; S.products.push(np); save(); closeModal(); render(); setTimeout(() => editProduct(np.id), 260); };
+    $('#pDup').onclick = () => { const np = {...p, photos: photosOf(p).map(x => ({...x})), id: uid(), name: p.name + ' (Kopie)', sku: '', stock: 0, created: Date.now()}; S.products.push(np); save(); closeModal(); render(); setTimeout(() => editProduct(np.id), 260); };
   }
 }
 
@@ -1373,6 +1425,11 @@ $('#privacyBtn').onclick = () => openModal('Datenschutz', `<div style="font-size
   <div><b style="color:var(--primary)">5. Löschen</b><p class="muted">Unter „Mehr → Alle Daten löschen“ oder durch Deinstallation der App werden alle Daten entfernt.</p></div></div>`,
   `<button class="btn btn-primary" onclick="closeModal()">✓ Verstanden</button>`);
 $('#changelogBtn').onclick = () => openModal('Was ist neu?', `<div style="font-size:.86rem;line-height:1.6">
+  <b>v1.2.0 · Build 6</b> <span class="muted">– 05.11.2026</span>
+  <ul style="padding-left:18px;margin:6px 0 12px" class="muted">
+  <li>Bis zu 8 Fotos pro Produkt, mehrere auf einmal auswählbar</li>
+  <li>Titelbild per ★ festlegen, einzelne Fotos entfernen</li>
+  <li>Großansicht: zwischen den Fotos wischen (oder ‹ ›), Zähler und Punkte</li></ul>
   <b>v1.1.0 · Build 5</b> <span class="muted">– 04.11.2026</span>
   <ul style="padding-left:18px;margin:6px 0 12px" class="muted">
   <li>Neuer Name: <b>WAWIWERK</b> – kleine Warenwirtschaft für Produkte, Lager & Verkauf (vorher KASSENWERK)</li>
@@ -1416,7 +1473,7 @@ if (IS_NATIVE && P.App) {
   });
   P.App.addListener('pause', () => saveNow());
 }
-document.addEventListener('keydown', e => { if (e.key === 'Escape') { if (lbOpen()) closeLightbox(); else if (modalOpen()) closeModal(); else closeCart(); } });
+document.addEventListener('keydown', e => { if (lbOpen() && (e.key === 'ArrowRight' || e.key === 'ArrowLeft')) return lbShow(LB.i + (e.key === 'ArrowRight' ? 1 : -1)); if (e.key === 'Escape') { if (lbOpen()) closeLightbox(); else if (modalOpen()) closeModal(); else closeCart(); } });
 
 /* ═══════════════ START ═══════════════ */
 (async function init() {
