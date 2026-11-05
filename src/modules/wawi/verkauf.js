@@ -216,7 +216,8 @@ function payDialog() {
 }
 function finishSale(method, given, change, note) {
   const c = cartCalc();
-  K.settings.receiptNo = (K.settings.receiptNo || 0) + 1; saveSettings();
+  // fortlaufend über alle Geräte: höchste bekannte Nummer + 1
+  K.settings.receiptNo = Math.max(K.settings.receiptNo || 0, ...bons().map(b => b.no || 0)) + 1; saveSettings();
   const sale = {
     id: uid(), art: 'bon', kanal: 'vor-ort', no: K.settings.receiptNo, ts: Date.now(), pay: method, payNote: note || '',
     items: cart.lines.map(l => { const p = l.pid && prodById(l.pid); return {pid: l.pid, name: l.name, qty: l.qty, price: l.price, cost: p ? (p.cost || 0) : 0, catId: p ? p.catId : null, tax: p ? (p.tax ?? K.settings.taxDefault) : K.settings.taxDefault}; }),

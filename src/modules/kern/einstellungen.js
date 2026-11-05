@@ -7,6 +7,8 @@ import {modules, isActive, toggleBlocker, setActive} from '../../core/modules.js
 import {exportBackup, parseBackup, restoreBackup, wipeAll} from '../../core/backup.js';
 import {changelogHtml} from '../../core/changelog.js';
 import {TOOL_CONFIG} from '../../core/config.js';
+import {cfg, connected, connect, disconnect, syncNow, status, requestFullSync} from '../../core/sync.js';
+import {fmtDT, IS_NATIVE} from '../../core/util.js';
 
 export const html = `
     <div class="section-title" style="margin-top:4px">🏢 Firma</div>
@@ -29,8 +31,8 @@ export const html = `
     </div>
     <div class="section-title">🧩 Module <span class="muted">einzeln ein- und ausschaltbar</span></div>
     <div class="card" style="padding:4px 16px" id="modList"></div>
-    <div class="section-title">🔄 Geräte-Abgleich</div>
-    <div class="info-box"><b>Kommt in Phase 2:</b> Abgleich zwischen PC und Handy über einen eigenen PocketBase-Server. Bis dahin bleiben die Daten auf diesem Gerät; zum Übertragen ein Backup exportieren und auf dem anderen Gerät wiederherstellen.<br><span class="muted" id="devId" style="font-size:.72rem"></span></div>
+    <div class="section-title">🔄 Geräte-Abgleich <span class="muted">PC und Handy mit denselben Daten</span></div>
+    <div class="card" id="syncBox"></div>
     <div class="section-title">🎨 Design</div>
     <div class="segment" id="themeSeg"><button data-t="auto">Automatisch</button><button data-t="light">☀️ Hell</button><button data-t="dark">🌙 Dunkel</button></div>
     <div class="section-title">💾 Daten</div>
@@ -39,7 +41,7 @@ export const html = `
     <div class="section-title">ℹ️ Info</div>
     <div class="info-box"><b>Hinweis zur Kassenführung:</b> KONTORWERK ist ein Werkzeug für Warenwirtschaft und Betriebsverwaltung und kein zertifiziertes Kassensystem. Es besitzt keine technische Sicherheitseinrichtung (TSE) nach Kassensicherungsverordnung. Ob und wie du es für deine Aufzeichnungspflichten einsetzen darfst, klärst du am besten mit deiner Steuerberatung.</div>
     <div class="list" style="margin-top:12px">
-      <button class="li" id="privacyBtn"><div class="li-thumb">🔒</div><div class="li-main"><div class="li-title">Datenschutz</div><div class="li-sub">Alle Daten bleiben auf diesem Gerät</div></div></button>
+      <button class="li" id="privacyBtn"><div class="li-thumb">🔒</div><div class="li-main"><div class="li-title">Datenschutz</div><div class="li-sub">Daten auf dem Gerät und auf deinem Server</div></div></button>
       <button class="li" id="changelogBtn"><div class="li-thumb">📝</div><div class="li-main"><div class="li-title">Was ist neu?</div><div class="li-sub" id="verSub"></div></div></button>
     </div>
     <div class="footer">🏛️ <b>KONTORWERK</b> — david.digital <span class="fv" id="footerVersion"></span></div>`;
@@ -72,8 +74,42 @@ function renderData() {
   $('#exportBtn').onclick = exportBackup;
   $('#importBtn').onclick = () => $('#importFile').click();
   $('#wipeBtn').onclick = async () => {
-    if (!await confirmBox('Alle Daten löschen?', 'Produkte, Kontakte, Lager und alle Belege werden <b>unwiderruflich</b> gelöscht. Tipp: Vorher ein Backup exportieren.', 'Alles löschen', true)) return;
+    if (!await confirmBox('Alle Daten löschen?', `Produkte, Kontakte, Lager und alle Belege werden <b>unwiderruflich</b> gelöscht. Tipp: Vorher ein Backup exportieren.${connected() ? ' Der Geräte-Abgleich wird getrennt; die Daten auf dem Server bleiben erhalten.' : ''}`, 'Alles löschen', true)) return;
     await wipeAll(); toast('Alle Daten gelöscht'); refreshApp(startView());
+  };
+}
+
+export function renderSync() {
+  const box = $('#syncBox'); if (!box) return;
+  const c = cfg();
+  // Läuft die Web-App auf dem eigenen Server, ist das die Server-Adresse
+  const here = !IS_NATIVE && location.protocol === 'https:' && location.hostname !== 'localhost' ? location.origin : '';
+  if (!connected()) {
+    box.innerHTML = `<p class="muted" style="font-size:.82rem;line-height:1.5;margin-bottom:12px">Verbinde dieses Gerät mit deinem PocketBase-Server. Danach gleichen sich alle verbundenen Geräte automatisch ab – auch offline erfasste Verkäufe, sobald wieder Netz da ist. Einrichtung des Servers: <b>server/ANLEITUNG.md</b> im Repo.</p>
+      ${status.state === 'fehler' ? `<div class="alert danger" style="margin:0 0 12px">${esc(status.msg)}</div>` : ''}
+      <div class="field"><label>Server-Adresse</label><input class="input" id="syUrl" placeholder="https://kontorwerk.example.de" value="${esc(c && c.url || here)}" autocapitalize="off" autocorrect="off"></div>
+      <div class="row"><div class="field"><label>E-Mail</label><input class="input" id="syMail" type="email" value="${esc(c && c.email || '')}" autocapitalize="off"></div>
+      <div class="field"><label>Passwort</label><input class="input" id="syPass" type="password"></div></div>
+      <button class="btn btn-primary btn-block" id="syConnect">Verbinden</button>
+      <div class="muted" style="font-size:.72rem;margin-top:8px">Das Passwort wird nicht gespeichert, nur eine Anmeldung, die sich selbst verlängert. Geräte-ID: ${esc(K.deviceId)}</div>`;
+    $('#syConnect').onclick = async () => {
+      const b = $('#syConnect'); b.disabled = true; b.textContent = 'Verbinde …';
+      try { await connect($('#syUrl').value, $('#syMail').value.trim(), $('#syPass').value); toast(status.state === 'ok' ? 'Verbunden – Daten abgeglichen' : status.msg, status.state !== 'ok'); }
+      catch (e) { toast(e.message, true); }
+      renderSync();
+    };
+    return;
+  }
+  const st = status.state === 'ok' ? `<span class="badge ok">verbunden</span>` : status.state === 'laeuft' ? `<span class="badge">gleicht ab …</span>` : status.state === 'offline' ? `<span class="badge gray">offline</span>` : `<span class="badge out">Fehler</span>`;
+  box.innerHTML = `<div class="switch" style="padding-top:0"><div><b>${esc(c.url.replace(/^https?:\/\//, ''))}</b><small>${esc(c.email)}</small></div>${st}</div>
+    ${status.msg ? `<div class="alert ${status.state === 'fehler' ? 'danger' : 'warn'}">${esc(status.msg)}</div>` : ''}
+    <div class="muted" style="font-size:.78rem;margin:10px 0 12px">Letzter Abgleich: ${c.lastOk ? fmtDT(c.lastOk) : '–'}${status.last ? ` · ${status.last.got} geholt, ${status.last.sent} hochgeladen` : ''}</div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn btn-primary" id="syNow">🔄 Jetzt abgleichen</button><button class="btn" id="syFull">Vollständig abgleichen</button><button class="btn btn-danger" id="syOff">Trennen</button></div>`;
+  $('#syNow').onclick = () => syncNow();
+  $('#syFull').onclick = () => { requestFullSync(); syncNow(); };
+  $('#syOff').onclick = async () => {
+    if (!await confirmBox('Abgleich trennen?', 'Dieses Gerät gleicht sich danach nicht mehr ab. Die Daten auf dem Gerät und auf dem Server bleiben erhalten.', 'Trennen', true)) return;
+    disconnect(); renderSync();
   };
 }
 
@@ -85,8 +121,7 @@ export function renderEinstellungen() {
   $('#setNeg').checked = s.allowNegative; $('#setMin').value = s.minDefault; $('#setHaptic').checked = s.haptic;
   $('#footerVersion').textContent = `v${TOOL_CONFIG.version} · Build ${TOOL_CONFIG.build}`;
   $('#verSub').textContent = `Version ${TOOL_CONFIG.version} (Build ${TOOL_CONFIG.build})`;
-  $('#devId').textContent = 'Geräte-ID: ' + K.deviceId;
-  renderModules(); renderData(); applyTheme();
+  renderSync(); renderModules(); renderData(); applyTheme();
 }
 
 export function initEinstellungen() {
@@ -114,7 +149,7 @@ export function initEinstellungen() {
       try {
         const b = parseBackup(fr.result), n = b.summary;
         const what = `${n.products} Produkte, ${n.categories} Kategorien, ${n.sales} Belege${n.contacts ? `, ${n.contacts} Kontakte` : ''}`;
-        if (!await confirmBox('Backup wiederherstellen?', `${b.kind}-Backup: ${what} werden geladen. <b>Alle aktuellen Daten werden ersetzt.</b>`, 'Wiederherstellen', true)) return;
+        if (!await confirmBox('Backup wiederherstellen?', `${b.kind}-Backup: ${what} werden geladen. <b>Alle aktuellen Daten werden ersetzt.</b>${connected() ? ' Danach wird mit dem Server zusammengeführt – neuere Daten vom Server bleiben erhalten.' : ''}`, 'Wiederherstellen', true)) return;
         await restoreBackup(b); toast('Backup wiederhergestellt'); refreshApp('einstellungen');
       } catch (err) { toast('Datei ungültig: ' + err.message, true); }
       e.target.value = '';
@@ -123,7 +158,8 @@ export function initEinstellungen() {
   };
   $('#privacyBtn').onclick = () => { openModal('Datenschutz', `<div style="font-size:.85rem;line-height:1.6;display:flex;flex-direction:column;gap:12px">
     <div><b style="color:var(--primary)">1. Verantwortlicher</b><p class="muted">Diese App läuft vollständig lokal auf deinem Gerät. Anbieter: <b style="color:var(--text)">david.digital</b>.</p></div>
-    <div><b style="color:var(--primary)">2. Gespeicherte Daten</b><p class="muted">Produkte, Lager, Belege, Kontakte und Einstellungen werden ausschließlich im lokalen Speicher der App (IndexedDB) abgelegt. Es gibt derzeit keinen Server, kein Konto, kein Tracking und keine Werbung.</p></div>
+    <div><b style="color:var(--primary)">2. Gespeicherte Daten</b><p class="muted">Produkte, Lager, Belege, Kontakte und Einstellungen werden ausschließlich im lokalen Speicher der App (IndexedDB) abgelegt. Es gibt kein Tracking und keine Werbung.</p></div>
+    <div><b style="color:var(--primary)">2a. Geräte-Abgleich</b><p class="muted">Nur wenn du ihn einrichtest: Dann werden die Daten zusätzlich auf deinem eigenen PocketBase-Server gespeichert, den du selbst betreibst. david.digital hat keinen Zugriff darauf.</p></div>
     <div><b style="color:var(--primary)">3. Kontakte</b><p class="muted">Wenn du Kunden oder Lieferanten anlegst, speicherst du personenbezogene Daten. Du bist dafür verantwortlich, sie nur für deine Geschäftszwecke zu nutzen und auf Wunsch zu löschen.</p></div>
     <div><b style="color:var(--primary)">4. Weitergabe</b><p class="muted">Daten verlassen das Gerät nur, wenn du selbst einen Export, ein Backup oder einen Bon teilst.</p></div>
     <div><b style="color:var(--primary)">5. Löschen</b><p class="muted">Unter „Einstellungen → Alle Daten löschen“ oder durch Deinstallation der App werden alle Daten entfernt.</p></div></div>`,

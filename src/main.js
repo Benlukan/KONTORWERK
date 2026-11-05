@@ -8,6 +8,9 @@ import {initLightbox, lbOpen, closeLightbox, lbStep} from './core/lightbox.js';
 import {initShell, mountModules, applyTheme, buildNav, go, ui, startView} from './core/shell.js';
 import {modules, mod} from './core/modules.js';
 import {migrateIfNeeded} from './core/migrate.js';
+import {initSync, onSyncStatus, onRemoteChange, connected, syncNow, cfg, status} from './core/sync.js';
+import {renderSync} from './modules/kern/einstellungen.js';
+import {render} from './core/shell.js';
 // Reihenfolge = Reihenfolge in der Seitenleiste
 import './modules/kern/index.js';
 import './modules/wawi/index.js';
@@ -41,6 +44,18 @@ function back() {
   initUi(); initLightbox(); initShell();
   mountModules();
   applyTheme(); buildNav(); go(startView());
+  // Geräte-Abgleich
+  const syncIcon = st => {
+    const b = $('#syncBtn'), on = connected() || (cfg() && cfg().url);
+    b.classList.toggle('hidden', !on);
+    b.textContent = {ok: '✅', laeuft: '🔄', offline: '📴', fehler: '⚠️'}[st.state] || '🔄';
+    b.title = st.msg || (st.state === 'ok' ? 'Abgeglichen – tippen zum erneuten Abgleich' : 'Geräte-Abgleich');
+    if (ui.view === 'einstellungen') renderSync();
+  };
+  onSyncStatus(syncIcon);
+  onRemoteChange(({settings}) => { if (settings) { applyTheme(); buildNav(); } if (!modalOpen()) render(); });
+  $('#syncBtn').onclick = () => { if (connected()) syncNow(); else go('einstellungen'); };
+  initSync(); syncIcon(status);
   if (mig) toast(`WAWIWERK-Daten übernommen: ${mig.products} Produkte, ${mig.sales} Verkäufe`);
 
   $('#overlay').onclick = () => { if (modalOpen()) closeModal(); else modules().forEach(m => m.onOverlay && m.onOverlay()); };
@@ -52,7 +67,7 @@ function back() {
   matchMedia('(min-width:1024px)').addEventListener('change', e => { if (e.matches !== wasDesktop) { wasDesktop = e.matches; buildNav(); } });
   if (IS_NATIVE && P.App) {
     P.App.addListener('backButton', back);
-    P.App.addListener('pause', () => flush());
+    P.App.addListener('pause', () => { flush(); if (connected()) syncNow(); });
   }
   if ('serviceWorker' in navigator && !IS_NATIVE && location.protocol.startsWith('http')) navigator.serviceWorker.register('sw.js').catch(() => {});
 })();

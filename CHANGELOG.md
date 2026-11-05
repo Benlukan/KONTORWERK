@@ -1,5 +1,17 @@
 # Changelog
 
+## v2.1.0 (Build 8) – 05.11.2026
+- **Geräte-Abgleich** über einen eigenen PocketBase-Server: Einstellungen → Geräte-Abgleich → Server-Adresse, E-Mail, Passwort
+- Offline-fähig: Änderungen werden nach jeder Änderung (4 s), jede Minute, beim Öffnen und beim Schließen der App abgeglichen
+- Erstes Verbinden (und nach Backup-Import) führt einen Vollabgleich durch: alles holen, lokal Neueres hochladen
+- Konflikte: jüngere Änderung gewinnt; gelöschte Datensätze werden über Grabsteine an alle Geräte weitergegeben
+- Firmendaten, Steuer- und Moduleinstellungen gleichen sich ab, das Design (Hell/Dunkel) bleibt je Gerät
+- Bonnummern: höchste bekannte Nummer aller Geräte + 1
+- Statusanzeige in der Kopfzeile (✅ / 🔄 / 📴 / ⚠️), Tippen gleicht sofort ab
+- „Alle Daten löschen“ trennt den Abgleich (Server-Daten bleiben erhalten)
+- Neu im Repo: `server/` mit PocketBase-Schema (`pb_migrations`), Einrichtungs-Skript `install.sh` (PocketBase, HTTPS über Caddy, Web-App für den PC, tägliche Sicherung) und `ANLEITUNG.md` für Oracle Cloud „Always Free“
+- Releases enthalten zusätzlich `KONTORWERK-web.zip` (Web-App für den Server)
+
 ## v2.0.0 (Build 7) – 05.11.2026
 - **Neuer Name: KONTORWERK** – aus WAWIWERK wird ein modulares ERP; WAWIWERK lebt als Modul „Warenwirtschaft & Verkauf“ weiter
 - **Module:** Kern (Übersicht, Kontakte, Einstellungen) + Warenwirtschaft & Verkauf; unter „Einstellungen → Module“ einzeln ein- und ausschaltbar, mit Abhängigkeiten
