@@ -74,3 +74,34 @@ img.brand-logo{background:none;padding:0;object-fit:cover;box-shadow:0 4px 14px 
 .mod-row small{font-size:.74rem;color:var(--muted);display:block;line-height:1.4}
 .mod-row.planned .mi{filter:grayscale(1);opacity:.6}
 .toggle input:disabled+span{opacity:.45}
+
+/* ═══ Alte WebViews ohne CSS Grid (vor Chrome 57, z. B. Tablets mit Android 7 und Custom-ROM) ═══
+ * Gleiche Anordnung mit Flexbox. Flex-„gap“ kennen diese WebViews auch nicht → Abstände über margin. */
+@supports not (display:grid){
+  .brand-logo,.icon-btn,.li-thumb,.img-prev,.x-btn,.nav-dot,.tile .ti-qty,.success .ok-ring,.ph button,.lb-nav,.lb-stage,.mod-row .mi,.swatch.auto::after{display:flex;align-items:center;justify-content:center}
+  .tile .ti-img{display:flex;align-items:center;justify-content:center}
+  .stats-grid,.grid,.menu-grid,.watch,.grid2,.pay-methods,.quick{display:flex;flex-wrap:wrap;margin:-5px;gap:0}
+  .stats-grid>*,.grid>*,.menu-grid>*,.watch>*,.grid2>*,.pay-methods>*,.quick>*{margin:5px}
+  .stats-grid>*{flex:1 1 150px}
+  .grid>*{flex:0 0 calc(33.333% - 11px)}
+  .menu-grid>*{flex:1 1 140px}
+  .watch>*,.grid2>*{flex:1 1 100%}
+  .pay-methods>*{flex:1 1 0}
+  .quick>*{flex:1 1 0}
+  .bar-row{display:flex;align-items:center}
+  .bar-row .bl{flex:0 0 34%;margin-right:10px}.bar-row .bar-track{flex:1;margin-right:10px}
+  .pos{display:block}
+  .row>*+*{margin-left:10px}
+  .chips>*,.cart-actions>*,.segment>*,.top-actions>*{margin-right:6px}
+  .modal-foot>*{margin:4px}
+}
+@supports not (display:grid){
+  @media (min-width:600px){.grid>*{flex:0 0 calc(20% - 11px)}}
+  @media (min-width:1200px){.grid>*{flex:0 0 calc(16.666% - 11px)}}
+  @media (min-width:800px){.watch>*,.grid2>*{flex:1 1 0}}
+  @media (min-width:900px), (orientation:landscape) and (min-width:640px){
+    .pos{display:flex;align-items:flex-start}
+    .pos>:first-child{flex:1;min-width:0;margin-right:16px}
+    .pos>.cart{flex:0 0 34%;min-width:280px}
+  }
+}

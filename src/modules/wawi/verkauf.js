@@ -18,7 +18,7 @@ export const html = `
       </div>
       <aside class="cart" id="cart">
         <div class="cart-head">
-          <b>🧾 Warenkorb <span class="muted" id="cartCount" style="font-weight:500"></span></b>
+          <b>📃 Warenkorb <span class="muted" id="cartCount" style="font-weight:500"></span></b>
           <div style="display:flex;gap:6px">
             <button class="btn btn-sm" id="cartClear">Leeren</button>
             <button class="x-btn sheet-close" id="cartClose">✕</button>
@@ -230,7 +230,7 @@ function finishSale(method, given, change, note) {
   openModal('Verkauf abgeschlossen', `
     <div class="success"><div class="ok-ring">✓</div><div style="font-weight:800;font-size:1.2rem">${eur(sale.total)}</div><div class="muted" style="font-size:.85rem">Bon #${sale.no} · ${payLabel(sale)}</div>
     ${sale.pay === 'bar' && sale.change ? `<div class="change" style="margin-top:14px"><span>Rückgeld</span><b class="num">${eur(sale.change)}</b></div>` : ''}</div>`,
-    `<button class="btn" id="sRc">🧾 Bon</button><button class="btn btn-primary" id="sNew">Neuer Verkauf</button>`);
+    `<button class="btn" id="sRc">📃 Bon</button><button class="btn btn-primary" id="sNew">Neuer Verkauf</button>`);
   $('#sRc').onclick = () => showReceipt(sale.id);
   $('#sNew').onclick = closeModal;
   render();

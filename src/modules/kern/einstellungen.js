@@ -30,7 +30,7 @@ export const html = `
       <div class="switch"><div><b>Mindestbestand (Standard)</b><small>Warnung ab diesem Bestand</small></div><input class="input" id="setMin" type="number" min="0" style="width:90px" inputmode="numeric"></div>
       <div class="switch"><div><b>Vibration</b><small>Kurzes Feedback beim Hinzufügen</small></div><label class="toggle"><input type="checkbox" id="setHaptic"><span></span></label></div>
     </div>
-    <div class="section-title">🧩 Module <span class="muted">einzeln ein- und ausschaltbar</span></div>
+    <div class="section-title">🔌 Module <span class="muted">einzeln ein- und ausschaltbar</span></div>
     <div class="card" style="padding:4px 16px" id="modList"></div>
     <div class="section-title">🔄 Geräte-Abgleich <span class="muted">PC und Handy mit denselben Daten</span></div>
     <div class="card" id="syncBox"></div>
@@ -121,7 +121,8 @@ export function renderEinstellungen() {
   $('#setKlein').checked = s.klein; $('#setTax').value = s.taxDefault; $('#taxRateRow').classList.toggle('hidden', s.klein);
   $('#setNeg').checked = s.allowNegative; $('#setMin').value = s.minDefault; $('#setHaptic').checked = s.haptic;
   $('#footerVersion').textContent = `v${TOOL_CONFIG.version} · Build ${TOOL_CONFIG.build}`;
-  $('#verSub').textContent = `Version ${TOOL_CONFIG.version} (Build ${TOOL_CONFIG.build})`;
+  const wv = (navigator.userAgent.match(/Chrome\/(\d+)/) || [])[1];
+  $('#verSub').textContent = `Version ${TOOL_CONFIG.version} (Build ${TOOL_CONFIG.build})${wv ? ' · WebView ' + wv : ''}`;
   renderSync(); renderModules(); renderData(); applyTheme();
 }
 
