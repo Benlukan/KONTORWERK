@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024"><defs><linearGradient id="kwnavy" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#00407f"/><stop offset="1" stop-color="#001436"/></linearGradient></defs>
+    <rect width="1024" height="1024" rx="0" fill="url(#kwnavy)"/><g transform="translate(512 512) scale(0.78) translate(-512 -512)">
+    <path d="M120 870 V405 L512 160 L904 405 V870" stroke="#fff" stroke-width="62" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    <g transform="translate(170 420) scale(2.16)">
+    <defs><linearGradient id="kwt6" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1683e0"/><stop offset="1" stop-color="#0458bd"/></linearGradient></defs>
+    <rect width="100" height="100" rx="20" fill="url(#kwt6)"/>
+    <g transform="translate(10 10) scale(.8)">
+    <path d="M50 16 L83 33 L50 50 L17 33 Z" fill="#fff"/>
+    <path d="M17 38 L47 53 L47 86 L17 70 Z" fill="#fff"/>
+    <path d="M53 53 L83 38 L83 70 L53 86 Z" fill="#fff"/>
+    <path d="M33 24.5 L66 41.5 L66 52" stroke="#0458bd" stroke-width="6" fill="none" stroke-linejoin="round"/>
+    <path d="M24 60 L24 66 M31 64 L31 70" stroke="#0458bd" stroke-width="3.5" stroke-linecap="round"/></g></g><g transform="translate(404 420) scale(2.16)">
+    <defs><linearGradient id="kwt7" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5bb8ea"/><stop offset="1" stop-color="#2c8fd6"/></linearGradient></defs>
+    <rect width="100" height="100" rx="20" fill="url(#kwt7)"/>
+    <g transform="translate(10 10) scale(.8)">
+    <path d="M26 14 H60 L76 30 V82 a4 4 0 0 1 -4 4 H26 a4 4 0 0 1 -4 -4 V18 a4 4 0 0 1 4 -4 Z" fill="#fff"/>
+    <path d="M60 14 V30 H76" fill="#dbe9f6"/>
+    <path d="M33 40 H60 M33 52 H66 M33 64 H66 M33 76 H54" stroke="#2c8fd6" stroke-width="5.5" stroke-linecap="round"/></g></g><g transform="translate(638 420) scale(2.16)">
+    <defs><linearGradient id="kwt8" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#26b5ae"/><stop offset="1" stop-color="#0f857c"/></linearGradient></defs>
+    <rect width="100" height="100" rx="20" fill="url(#kwt8)"/>
+    <g transform="translate(10 10) scale(.8)">
+    <rect x="10" y="28" width="50" height="38" rx="5" fill="#fff"/>
+    <path d="M62 38 H78 L90 52 V66 H62 Z" fill="#fff" stroke="#fff" stroke-width="4" stroke-linejoin="round"/>
+    <path d="M67 43 H76 L83 52 H67 Z" fill="#0f857c"/>
+    <circle cx="30" cy="70" r="10" fill="#fff" stroke="#0f857c" stroke-width="4"/>
+    <circle cx="74" cy="70" r="10" fill="#fff" stroke="#0f857c" stroke-width="4"/></g></g><g transform="translate(170 654) scale(2.16)">
+    <defs><linearGradient id="kwt9" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6d45c6"/><stop offset="1" stop-color="#4a2a9e"/></linearGradient></defs>
+    <rect width="100" height="100" rx="20" fill="url(#kwt9)"/>
+    <g transform="translate(10 10) scale(.8)">
+    <path d="M12 24 H25 L34 62 H74 L84 36 H29" stroke="#fff" stroke-width="7.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="40" cy="77" r="7" fill="#fff"/><circle cx="69" cy="77" r="7" fill="#fff"/></g></g><g transform="translate(404 654) scale(2.16)">
+    <defs><linearGradient id="kwt10" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ff9a2e"/><stop offset="1" stop-color="#ee6400"/></linearGradient></defs>
+    <rect width="100" height="100" rx="20" fill="url(#kwt10)"/>
+    <g transform="translate(10 10) scale(.8)">
+    <rect x="18" y="54" width="16" height="28" rx="3" fill="#fff"/>
+    <rect x="42" y="38" width="16" height="44" rx="3" fill="#fff"/>
+    <rect x="66" y="18" width="16" height="64" rx="3" fill="#fff"/></g></g><g transform="translate(638 654) scale(2.16)">
+    <defs><linearGradient id="kwt11" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fdc62a"/><stop offset="1" stop-color="#f0a000"/></linearGradient></defs>
+    <rect width="100" height="100" rx="20" fill="url(#kwt11)"/>
+    <g transform="translate(10 10) scale(.8)"><path d="M13 70 v9 a19 7.9799999999999995 0 0 0 38 0 v-9" fill="#fff" stroke="#f0a000" stroke-width="3"/><ellipse cx="32" cy="70" rx="19" ry="7.9799999999999995" fill="#fff" stroke="#f0a000" stroke-width="3"/><path d="M13 57 v9 a19 7.9799999999999995 0 0 0 38 0 v-9" fill="#fff" stroke="#f0a000" stroke-width="3"/><ellipse cx="32" cy="57" rx="19" ry="7.9799999999999995" fill="#fff" stroke="#f0a000" stroke-width="3"/><path d="M45 66 v9 a19 7.9799999999999995 0 0 0 38 0 v-9" fill="#fff" stroke="#f0a000" stroke-width="3"/><ellipse cx="64" cy="66" rx="19" ry="7.9799999999999995" fill="#fff" stroke="#f0a000" stroke-width="3"/><path d="M45 53 v9 a19 7.9799999999999995 0 0 0 38 0 v-9" fill="#fff" stroke="#f0a000" stroke-width="3"/><ellipse cx="64" cy="53" rx="19" ry="7.9799999999999995" fill="#fff" stroke="#f0a000" stroke-width="3"/><path d="M45 40 v9 a19 7.9799999999999995 0 0 0 38 0 v-9" fill="#fff" stroke="#f0a000" stroke-width="3"/><ellipse cx="64" cy="40" rx="19" ry="7.9799999999999995" fill="#fff" stroke="#f0a000" stroke-width="3"/><path d="M45 27 v9 a19 7.9799999999999995 0 0 0 38 0 v-9" fill="#fff" stroke="#f0a000" stroke-width="3"/><ellipse cx="64" cy="27" rx="19" ry="7.9799999999999995" fill="#fff" stroke="#f0a000" stroke-width="3"/></g></g></g></svg>

@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" class="kw-ico" width="256" height="256" viewBox="0 0 100 100" aria-hidden="true"><g transform="translate(0 0) scale(1)">
+    <defs><linearGradient id="kwt30" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5c6573"/><stop offset="1" stop-color="#3b424d"/></linearGradient></defs>
+    <rect width="100" height="100" rx="20" fill="url(#kwt30)"/>
+    <g transform="translate(10 10) scale(.8)">
+    <circle cx="40" cy="30" r="13" fill="#fff"/>
+    <path d="M14 78 C14 56 26 48 40 48 C50 48 56 52 60 56 L60 78 Z" fill="#fff"/>
+    <path d="M55 76 v9 a17 7.14 0 0 0 34 0 v-9" fill="#fff" stroke="#3b424d" stroke-width="3"/><ellipse cx="72" cy="76" rx="17" ry="7.14" fill="#fff" stroke="#3b424d" stroke-width="3"/><path d="M55 64 v9 a17 7.14 0 0 0 34 0 v-9" fill="#fff" stroke="#3b424d" stroke-width="3"/><ellipse cx="72" cy="64" rx="17" ry="7.14" fill="#fff" stroke="#3b424d" stroke-width="3"/><path d="M55 52 v9 a17 7.14 0 0 0 34 0 v-9" fill="#fff" stroke="#3b424d" stroke-width="3"/><ellipse cx="72" cy="52" rx="17" ry="7.14" fill="#fff" stroke="#3b424d" stroke-width="3"/></g></g></svg>

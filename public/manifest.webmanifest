@@ -1,12 +1,12 @@
 {
   "name": "KONTORWERK",
   "short_name": "KONTORWERK",
-  "description": "Modulares ERP für Maker: Warenwirtschaft, Verkauf, Kontakte – david.digital",
+  "description": "KONTORWERK – Das ERP für Selbstständige (david.digital)",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
   "background_color": "#f0f2f8",
-  "theme_color": "#009EB2",
+  "theme_color": "#00407f",
   "lang": "de",
   "icons": [
     {

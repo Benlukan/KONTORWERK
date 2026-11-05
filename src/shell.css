@@ -3,6 +3,17 @@
 /* Alte WebViews ohne aspect-ratio (vor Chrome 88): feste Bildhöhe in den Kacheln */
 @supports not (aspect-ratio:1/1){.tile .ti-img{height:84px}}
 
+/* Schriftzug wie im Logo: KONTOR dunkel, WERK blau */
+.brand h1{color:var(--text);letter-spacing:.03em}
+.brand h1 span{background:none;-webkit-text-fill-color:#1683e0;color:#1683e0}
+[data-theme="dark"] .brand h1 span{-webkit-text-fill-color:#4aa3f0;color:#4aa3f0}
+
+/* Logo als Bild (statt Buchstabe) */
+img.brand-logo{background:none;padding:0;object-fit:cover;box-shadow:0 4px 14px rgba(0,20,54,.35)}
+.side-group .kw-ico{vertical-align:-3px;margin-right:6px;border-radius:4px}
+.mod-row .mi .kw-ico,.li-thumb .kw-ico,.menu-tile .kw-ico{display:block}
+.mod-row .mi.svg,.li-thumb.svg{background:none}
+
 /* Seitenleiste (PC) – auf dem Handy ausgeblendet */
 .sidebar{display:none}
 .side-group{font-size:.66rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:700;padding:16px 12px 6px}

@@ -2,6 +2,7 @@
 import {$, $$, esc} from '../../core/util.js';
 import {registerModule, activeViews, modules} from '../../core/modules.js';
 import {go} from '../../core/shell.js';
+import {moduleIcon} from '../../core/brand.js';
 import * as U from './uebersicht.js';
 import * as KT from './kontakte.js';
 import * as E from './einstellungen.js';
@@ -14,7 +15,7 @@ function renderMehr() {
   const vs = activeViews().filter(v => !inBar.has(v.id) && v.id !== 'mehr');
   $('#menuGrid').innerHTML = vs.map(v => `<button class="menu-tile" data-go="${v.id}"><i>${v.icon}</i><b>${esc(v.label)}</b><small>${esc(v.hint || v.module.name)}</small>${v.badge && v.badge() ? `<span class="badge low">${v.badge()}</span>` : ''}</button>`).join('');
   $('#menuPlanned').innerHTML = modules().filter(m => m.planned).sort((a, b) => a.planned - b.planned)
-    .map(m => `<div class="menu-tile planned"><i>${m.icon}</i><b>${esc(m.name)}</b><small>${esc(m.desc)}</small><span class="badge gray">Phase ${m.planned}</span></div>`).join('');
+    .map(m => `<div class="menu-tile planned"><i>${moduleIcon(m.id, 36) || m.icon}</i><b>${esc(m.name)}</b><small>${esc(m.desc)}</small><span class="badge gray">Phase ${m.planned}</span></div>`).join('');
   $$('#menuGrid [data-go]').forEach(b => b.onclick = () => go(b.dataset.go));
 }
 
