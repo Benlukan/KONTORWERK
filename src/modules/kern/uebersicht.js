@@ -26,7 +26,7 @@ function watchHtml() {
   if (now.total > GRENZE_LAUFEND) alerts.push(['danger', `Der Umsatz ${y} liegt über 100.000 €. Die Kleinunternehmerregelung endet damit sofort, ab dem Umsatz, der die Grenze überschreitet.`]);
   else if (now.total >= GRENZE_LAUFEND * 0.8) alerts.push(['warn', `Der Umsatz ${y} nähert sich der Grenze von 100.000 €. Wird sie überschritten, endet die Befreiung sofort.`]);
   if (now.total > GRENZE_VORJAHR && prev.total <= GRENZE_VORJAHR) alerts.push(['warn', `Der Umsatz ${y} liegt über 25.000 €. Für ${y} ändert sich nichts, aber ab ${y + 1} bist du voraussichtlich kein Kleinunternehmer mehr.`]);
-  return `<div class="section-title" style="margin-top:4px">🧾 Kleinunternehmer-Grenzen (§ 19 UStG) <button class="btn btn-sm" id="dashExtra">Umsätze nachtragen</button></div>
+  return `<div class="section-title" style="margin-top:4px">📃 Kleinunternehmer-Grenzen (§ 19 UStG) <button class="btn btn-sm" id="dashExtra">Umsätze nachtragen</button></div>
     <div class="watch">
       <div class="card"><h4><span>Laufendes Jahr ${y}</span><span class="muted">max. 100.000 €</span></h4><div class="big">${eur(now.total)}</div>${meter(now.total, GRENZE_LAUFEND)}
         <div class="muted" style="font-size:.75rem">${eur(now.inApp)} in KONTORWERK${now.extra ? ` + ${eur(now.extra)} nachgetragen` : ''}</div></div>
@@ -70,7 +70,7 @@ function statsHtml() {
 function planHtml() {
   const planned = modules().filter(m => m.planned).sort((a, b) => a.planned - b.planned);
   if (!planned.length) return '';
-  return `<div class="section-title">🧩 Module in Arbeit <span class="muted">Ausbau nach Phasenplan</span></div>
+  return `<div class="section-title">🔌 Module in Arbeit <span class="muted">Ausbau nach Phasenplan</span></div>
     <div class="list">${planned.map(m => `<div class="li"><div class="li-thumb svg">${moduleIcon(m.id, 44) || m.icon}</div><div class="li-main"><div class="li-title">${esc(m.name)}</div><div class="li-sub">${esc(m.desc)}</div></div><div class="li-end"><span class="badge gray">Phase ${m.planned}</span></div></div>`).join('')}</div>`;
 }
 

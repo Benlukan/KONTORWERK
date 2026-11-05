@@ -9,7 +9,7 @@ import * as E from './einstellungen.js';
 
 /* „Mehr“ (nur Handy): alle Ansichten, die nicht in der unteren Leiste stehen, und geplante Module */
 const mehrHtml = `<div class="section-title" style="margin-top:4px">☰ Alle Bereiche</div><div class="menu-grid" id="menuGrid"></div>
-  <div class="section-title">🧩 Module in Arbeit</div><div class="menu-grid" id="menuPlanned"></div>`;
+  <div class="section-title">🔌 Module in Arbeit</div><div class="menu-grid" id="menuPlanned"></div>`;
 function renderMehr() {
   const inBar = new Set($$('#nav [data-v]').map(b => b.dataset.v));
   const vs = activeViews().filter(v => !inBar.has(v.id) && v.id !== 'mehr');

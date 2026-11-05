@@ -10,7 +10,7 @@ export const html = `
     <div class="chips" id="periodChips"></div>
     <div class="stats-grid" id="repStats"></div>
     <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">
-      <button class="btn btn-soft" id="closeDayBtn">🧮 Tagesabschluss</button>
+      <button class="btn btn-soft" id="closeDayBtn">🔢 Tagesabschluss</button>
       <button class="btn" id="csvSalesBtn">⬇ CSV-Export</button>
     </div>
     <div id="repDays"></div>
@@ -20,7 +20,7 @@ export const html = `
     </div>
     <div class="section-title">🏆 Top-Produkte</div>
     <div class="list" id="repTop"></div>
-    <div class="section-title">🧾 Verkäufe <span class="muted" id="repSalesCount"></span></div>
+    <div class="section-title">📃 Verkäufe <span class="muted" id="repSalesCount"></span></div>
     <div class="list" id="repSales"></div>`;
 
 const PERIODS = [['today', 'Heute'], ['yesterday', 'Gestern'], ['7', '7 Tage'], ['30', '30 Tage'], ['month', 'Dieser Monat'], ['year', 'Dieses Jahr'], ['all', 'Alles']];
@@ -91,7 +91,7 @@ export function renderReports() {
   $('#repSalesCount').textContent = sl.length ? `· ${sl.length}` : '';
   $('#repSales').innerHTML = sl.length ? sl.slice(0, 200).map(s => `<button class="li ${s.storno ? 'strike' : ''}" data-s="${s.id}"><div class="li-thumb">${s.pay === 'bar' ? '💶' : s.pay === 'karte' ? '💳' : '📲'}</div><div class="li-main"><div class="li-title">Bon #${s.no} · ${s.items.reduce((x, i) => x + i.qty, 0)} Artikel</div><div class="li-sub">${fmtDT(s.ts)} · ${esc(s.items.map(i => i.name).join(', '))}</div></div><div class="li-end"><b class="num">${eur(s.total)}</b>${s.storno ? '<span class="badge out">Storno</span>' : ''}</div></button>`).join('')
     + (sl.length > 200 ? `<div class="li muted" style="font-size:.8rem;justify-content:center">… ${sl.length - 200} ältere im CSV-Export</div>` : '')
-    : `<div class="empty"><div>🧾</div><p>Keine Verkäufe im Zeitraum.</p></div>`;
+    : `<div class="empty"><div>📃</div><p>Keine Verkäufe im Zeitraum.</p></div>`;
   $$('#repSales [data-s]').forEach(x => x.onclick = () => showReceipt(x.dataset.s));
 }
 function exportSalesCsv() {

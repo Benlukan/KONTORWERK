@@ -1,5 +1,10 @@
 # Changelog
 
+## v2.2.2 (Build 12) – 05.11.2026
+- **Ältere Tablets** (WebView ohne CSS Grid, vor Chrome 57): Ersatz-Layout mit Flexbox für Produktkacheln, Kennzahlen, Grenzen-Wächter, Warenkorb neben den Produkten, Zahlarten, „Mehr“-Menü und Berichte
+- Emojis aus Unicode 10/11 (🧾 🧩 🧑 🧮), die ältere Geräte als leere Kästchen zeigen, durch ältere ersetzt (📃 🔌 👤 🔢)
+- Einstellungen: Versionszeile zeigt zusätzlich die WebView-Version
+
 ## v2.2.1 (Build 11) – 05.11.2026
 - **Behoben:** Auf älteren Tablets (Android 7.1.1 mit alter WebView) blieb die App leer – die WebView führte das als `type="module"` eingebundene Skript nicht aus
 - Bundle jetzt als klassisches Skript (IIFE) am Ende von `<body>`, Build-Ziel Chrome 55 (async/await wird übersetzt); `padStart`/`padEnd` und `matchMedia`-Listener für alte WebViews nachgerüstet

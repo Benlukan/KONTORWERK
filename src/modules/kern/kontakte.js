@@ -6,7 +6,7 @@ import {downloadFile} from '../../core/files.js';
 import {render} from '../../core/shell.js';
 
 export const html = `
-    <div class="segment" id="ktSeg"><button data-seg="all" class="active">Alle</button><button data-seg="kunde">🧑 Kunden</button><button data-seg="lieferant">🚚 Lieferanten</button></div>
+    <div class="segment" id="ktSeg"><button data-seg="all" class="active">Alle</button><button data-seg="kunde">👤 Kunden</button><button data-seg="lieferant">🚚 Lieferanten</button></div>
     <div class="search" style="margin-bottom:10px"><input class="input" id="ktSearch" placeholder="Name, Firma, Ort oder E-Mail…"></div>
     <div id="ktList"></div>
     <div style="margin-top:12px"><button class="btn btn-sm" id="ktCsv">⬇ Kontakte als CSV</button></div>
@@ -14,7 +14,7 @@ export const html = `
     <button class="fab" id="ktFab">＋ Kontakt</button>`;
 
 const st = {seg: 'all', q: ''};
-const TYP = {kunde: '🧑 Kunde', lieferant: '🚚 Lieferant', beides: '🔁 Beides'};
+const TYP = {kunde: '👤 Kunde', lieferant: '🚚 Lieferant', beides: '🔁 Beides'};
 const label = k => k.firma ? (k.name ? `${k.firma} · ${k.name}` : k.firma) : k.name;
 const hay = k => [k.name, k.firma, k.ort, k.email, k.telefon, k.nr].join(' ').toLowerCase();
 
@@ -31,7 +31,7 @@ export function renderKontakte() {
     return;
   }
   $('#ktList').innerHTML = list.length ? `<div class="list">${list.map(k => `<button class="li" data-id="${k.id}">
-      <div class="li-thumb">${k.typ === 'lieferant' ? '🚚' : '🧑'}</div>
+      <div class="li-thumb">${k.typ === 'lieferant' ? '🚚' : '👤'}</div>
       <div class="li-main"><div class="li-title">${esc(label(k))}</div><div class="li-sub">${esc([k.nr, [k.plz, k.ort].filter(Boolean).join(' '), k.email || k.telefon].filter(Boolean).join(' · ')) || '&nbsp;'}</div></div>
       <div class="li-end"><span class="badge ${k.typ === 'lieferant' ? 'gray' : ''}">${TYP[k.typ] || ''}</span></div></button>`).join('')}</div>`
     : `<div class="card empty"><div>🔍</div><p>Keine Treffer.</p></div>`;
