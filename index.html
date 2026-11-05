@@ -9,6 +9,23 @@
 <title>KONTORWERK — Das ERP für Selbstständige</title>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon-192.png">
+<script>
+/* Startprüfung in ES5: zeigt eine Meldung, falls die App auf einer alten WebView nicht startet */
+window.__kwErr = [];
+window.onerror = function (m, s, l, c) { window.__kwErr.push(m + ' (' + l + ':' + c + ')'); };
+setTimeout(function () {
+  if (window.__kwStarted) return;
+  var ua = navigator.userAgent, v = (ua.match(/Chrome\/([\d.]+)/) || [])[1] || 'unbekannt';
+  var d = document.createElement('div');
+  d.style.cssText = 'position:fixed;left:0;right:0;top:0;bottom:0;z-index:9999;background:#f0f2f8;color:#1a1f36;font:16px/1.5 sans-serif;padding:24px;overflow:auto';
+  d.innerHTML = '<h2 style="margin:0 0 12px">KONTORWERK konnte nicht starten</h2>'
+    + '<p>WebView-Version auf diesem Gerät: <b>Chrome ' + v + '</b><br>Nötig ist mindestens <b>Chrome 57</b>.</p>'
+    + '<p>Abhilfe: Im Play Store „Android System WebView“ (oder „Google Chrome“) aktualisieren. Auf Geräten ohne Play Store die WebView-Version unter Einstellungen → Entwickleroptionen → „WebView-Implementierung“ wählen.</p>'
+    + (window.__kwErr.length ? '<p style="font-size:13px;color:#b91c1c">Fehler: ' + window.__kwErr.join('<br>').replace(/</g, '&lt;') + '</p>' : '')
+    + '<p style="font-size:12px;color:#6b7280;word-break:break-all">' + ua.replace(/</g, '&lt;') + '</p>';
+  document.body.appendChild(d);
+}, 6000);
+</script>
 </head>
 <body>
 
