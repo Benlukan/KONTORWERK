@@ -12,7 +12,7 @@ Konzept & Phasenplan: [KONTORWERK – ERP-Konzept](https://claude.ai/artifact/2g
 | --- | --- | --- |
 | Kern: Übersicht (Kleinunternehmer-Wächter), Kontakte, Einstellungen | ✅ v2.0 | – |
 | Warenwirtschaft & Verkauf: Produkte, Kategorien, Lager, Verkauf mit Bon, Berichte, Tagesabschluss | ✅ v2.0 | Kern |
-| Geräte-Abgleich (PocketBase) | Phase 2 | – |
+| Geräte-Abgleich (PocketBase) | ✅ v2.1 | – |
 | Dokumente: Rechnung, Angebot, Lieferschein, Belegarchiv | Phase 2 | – |
 | Buchhaltung (EÜR, DATEV-Export) | Phase 3 | Dokumente |
 | Unternehmerlohn (Privatentnahmen) | Phase 3 | Buchhaltung |
@@ -31,6 +31,7 @@ src/core/             Kern: Datenbank, Modul-Registry, Shell, Dialoge, Backup, �
 src/modules/kern/     Übersicht, Kontakte, Einstellungen, „Mehr“
 src/modules/wawi/     Warenwirtschaft & Verkauf (Verkauf, Produkte, Lager, Berichte)
 src/modules/geplant.js  Geplante Module (Manifest mit Phase und Abhängigkeiten)
+server/               PocketBase-Schema, Einrichtungs-Skript, Anleitung (Oracle Cloud)
 public/               Schriften, Icons, Manifest, Service Worker
 www/                  Build-Ausgabe (nicht im Repo) – eine einzige index.html
 ```
@@ -39,12 +40,14 @@ www/                  Build-Ausgabe (nicht im Repo) – eine einzige index.html
 
 **Daten:** IndexedDB `kontorwerk`, eine Tabelle je Bereich (`kontakt`, `kategorie`, `produkt`, `lagerbewegung`, `beleg`, `tagesabschluss`) plus `meta` (Einstellungen, Geräte-ID). Jeder Datensatz trägt `erstellt`, `geaendert`, `geraet`; Löschen setzt einen Grabstein (`geloescht: true`). Schreiben nur über `put()` / `remove()` aus `src/core/db.js`.
 
+**Geräte-Abgleich:** `src/core/sync.js`. Server-Sammlung `kw_daten` (eine Zeile je Datensatz, id fest aus Tabelle + Datensatz-id). Holen: alles seit dem letzten Abgleich von anderen Geräten; Hochladen: alle eigenen Änderungen seit dem letzten Hochladen, per Batch-Upsert. Jüngere Änderung gewinnt. Einrichtung: [server/ANLEITUNG.md](server/ANLEITUNG.md).
+
 **Übernahme aus WAWIWERK:** Gleiche App-Kennung `de.daviddigital.kassenwerk`. Beim ersten Start liest KONTORWERK die alte Datenbank `kassenwerk` und übernimmt alles. Die alte Datenbank bleibt unverändert. Alte JSON-Backups lassen sich unter „Backup wiederherstellen“ einspielen.
 
 ## APK holen
 Jeder Push auf `main` baut die App über GitHub Actions:
 **Actions → „Android-App bauen“ → letzter Lauf → Artifacts → `KONTORWERK-android`** (ZIP mit der APK).
-Die Web-Version liegt im Artifact `KONTORWERK-web`.
+Die Web-Version liegt im Artifact `KONTORWERK-web`; Releases enthalten sie als `KONTORWERK-web.zip`, die `server/install.sh` auf den Server lädt.
 Die Debug-APK ist mit einem festen Schlüssel signiert – sie lässt sich über WAWIWERK installieren, die Daten bleiben erhalten.
 
 Ein Tag `v2.0.0` erzeugt zusätzlich ein GitHub-Release mit angehängter APK.

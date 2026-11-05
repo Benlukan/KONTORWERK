@@ -34,6 +34,10 @@ const pending = new Map(); // "tabelle\u0000id" → Datensatz
 let flushTimer = null;
 const listeners = new Set();
 export const onWriteError = fn => listeners.add(fn);
+const changeListeners = new Set();
+/** Wird nach jeder lokalen Änderung aufgerufen (z. B. für den Abgleich) */
+export const onLocalChange = fn => changeListeners.add(fn);
+const changed = () => changeListeners.forEach(f => f());
 
 function req(r) { return new Promise((res, rej) => { r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error); }); }
 
@@ -66,9 +70,11 @@ async function load() {
     rows.forEach(r => { idx[t].set(r.id, r); if (!r.geloescht) T[t].push(r); });
   }
   const m = tx.objectStore('meta');
-  const [settings, deviceId, migratedFrom] = await Promise.all(['settings', 'deviceId', 'migratedFrom'].map(k => req(m.get(k))));
+  const [settings, deviceId, migratedFrom, settingsTs, sync] = await Promise.all(['settings', 'deviceId', 'migratedFrom', 'settingsTs', 'sync'].map(k => req(m.get(k))));
   K.settings = mergeSettings(settings);
   K.meta.migratedFrom = migratedFrom || null;
+  K.meta.settingsTs = settingsTs || 0;
+  K.meta.sync = sync || null;
   K.deviceId = deviceId || null;
   if (!K.deviceId) { K.deviceId = uid(); queueMeta('deviceId', K.deviceId); }
 }
@@ -93,7 +99,7 @@ export function put(t, rec) {
   if (!ex || ex.geloescht) T[t].push(rec);
   else if (ex !== rec) { const i = T[t].indexOf(ex); if (i >= 0) T[t][i] = rec; else T[t].push(rec); }
   idx[t].set(rec.id, rec);
-  queue(t, rec);
+  queue(t, rec); changed();
   return rec;
 }
 
@@ -103,10 +109,36 @@ export function remove(t, id) {
   const tomb = {id, geloescht: true, erstellt: ex.erstellt, geaendert: Date.now(), geraet: K.deviceId};
   idx[t].set(id, tomb);
   const i = T[t].indexOf(ex); if (i >= 0) T[t].splice(i, 1);
-  queue(t, tomb);
+  queue(t, tomb); changed();
 }
 
-export function saveSettings() { queueMeta('settings', K.settings); }
+export function saveSettings() {
+  K.meta.settingsTs = Date.now();
+  queueMeta('settings', K.settings); queueMeta('settingsTs', K.meta.settingsTs); changed();
+}
+/** Einstellungen aus dem Abgleich übernehmen (ohne neuen Zeitstempel) */
+export function applyRemoteSettings(s, ts) {
+  K.settings = mergeSettings(s); K.meta.settingsTs = ts;
+  queueMeta('settings', K.settings); queueMeta('settingsTs', ts);
+}
+export function setMeta(key, val) { K.meta[key] = val; queueMeta(key, val); }
+
+/* ─── Abgleich ─── */
+export const getAny = (t, id) => idx[t].get(id);
+/** Datensatz von einem anderen Gerät übernehmen, wenn er neuer ist. true = übernommen */
+export function applyRemote(t, rec) {
+  if (!idx[t]) return false;
+  const ex = idx[t].get(rec.id);
+  if (ex && (ex.geaendert || 0) >= (rec.geaendert || 0)) return false;
+  idx[t].set(rec.id, rec);
+  const i = ex ? T[t].indexOf(ex) : -1;
+  if (rec.geloescht) { if (i >= 0) T[t].splice(i, 1); }
+  else if (i >= 0) T[t][i] = rec; else T[t].push(rec);
+  queue(t, rec);
+  return true;
+}
+/** Alle Datensätze (inkl. Grabsteine) als [tabelle, datensatz] */
+export const allRecords = () => TABLES.flatMap(t => [...idx[t].values()].map(r => [t, r]));
 
 function queue(t, rec) { pending.set(t + '\u0000' + rec.id, {t, rec}); schedule(); }
 function queueMeta(key, val) { pending.set('meta\u0000' + key, {t: 'meta', key, rec: val}); schedule(); }
@@ -141,6 +173,7 @@ export async function replaceAll(tables, settings, extraMeta = {}) {
     idx[t].set(r.id, r); if (!r.geloescht) T[t].push(r);
   }
   K.settings = mergeSettings(settings);
+  K.meta.settingsTs = now; // übernommene Einstellungen gelten als aktuell (wichtig für den Abgleich)
   Object.assign(K.meta, extraMeta);
   if (!idb) return true;
   return new Promise(res => {
@@ -149,6 +182,7 @@ export async function replaceAll(tables, settings, extraMeta = {}) {
     const m = tx.objectStore('meta');
     m.put(JSON.parse(JSON.stringify(K.settings)), 'settings');
     m.put(K.deviceId, 'deviceId');
+    m.put(now, 'settingsTs');
     Object.entries(extraMeta).forEach(([k, v]) => m.put(v, k));
     tx.oncomplete = () => res(true);
     tx.onerror = tx.onabort = () => { listeners.forEach(f => f(tx.error)); res(false); };

@@ -1,5 +1,12 @@
 /* „Was ist neu?“ – in der App angezeigt (ausführlich: CHANGELOG.md) */
 export const CHANGELOG = [
+  ['2.1.0', 8, '05.11.2026', [
+    'Neu: <b>Geräte-Abgleich</b> – Handy und PC arbeiten mit denselben Daten über deinen eigenen PocketBase-Server',
+    'Funktioniert offline weiter: Änderungen werden abgeglichen, sobald wieder Netz da ist',
+    'Anzeige oben rechts: ✅ abgeglichen, 📴 offline, ⚠️ Problem – Tippen gleicht sofort ab',
+    'Bonnummern laufen über alle Geräte fortlaufend weiter',
+    'Server-Einrichtung mit einem Skript (Anleitung im Repo unter server/)'
+  ]],
   ['2.0.0', 7, '05.11.2026', [
     'Neuer Name: <b>KONTORWERK</b> – aus WAWIWERK wird ein modulares System für den ganzen Betrieb',
     'Module lassen sich unter „Einstellungen → Module“ einzeln ein- und ausschalten',
