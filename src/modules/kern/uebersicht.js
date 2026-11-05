@@ -63,6 +63,7 @@ function statsHtml() {
     out.push(`<div class="stat-card" data-go="berichte" style="--sc:var(--indigo)"><div class="sc-label">Umsatz Monat</div><div class="sc-value">${eur(sum(month))}</div><div class="sc-sub">${n(month)}</div></div>`);
     out.push(`<div class="stat-card" data-go="lager" style="--sc:${low ? 'var(--warn)' : 'var(--ok)'}"><div class="sc-label">Lager</div><div class="sc-value">${low}</div><div class="sc-sub">${low ? 'Produkte nachproduzieren' : 'alles auf Lager'}</div></div>`);
   }
+  modules().filter(m => isActive(m.id) && m.dashStats).forEach(m => out.push(...m.dashStats()));
   out.push(`<div class="stat-card" data-go="kontakte" style="--sc:var(--ok)"><div class="sc-label">Kontakte</div><div class="sc-value">${T.kontakt.length}</div><div class="sc-sub">Kunden & Lieferanten</div></div>`);
   return `<div class="section-title">📌 Auf einen Blick</div><div class="stats-grid">${out.join('')}</div>`;
 }

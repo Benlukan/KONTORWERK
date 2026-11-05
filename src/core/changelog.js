@@ -1,5 +1,16 @@
 /* „Was ist neu?“ – in der App angezeigt (ausführlich: CHANGELOG.md) */
 export const CHANGELOG = [
+  ['2.3.0', 13, '05.11.2026', [
+    'Neues Modul <b>Dokumente</b>: Rechnung, Angebot, Lieferschein und Gutschrift als PDF',
+    'Fortlaufende Nummern (z. B. RE-2026-0001), auch über mehrere Geräte',
+    'Abgeschlossene Dokumente sind unveränderbar; Korrektur per Storno mit Gutschrift',
+    'Angebot oder Lieferschein mit einem Tipp in eine Rechnung umwandeln',
+    'Bestand wird beim Abschließen auf Wunsch abgebucht, beim Storno zurückgebucht',
+    'Offene und überfällige Rechnungen in der Übersicht; Rechnungen zählen zum Kleinunternehmer-Wächter',
+    'Neues <b>Belegarchiv</b>: Quittungen fotografieren oder PDFs ablegen, mit Betrag, Lieferant, Kategorie und Suche',
+    'Einstellungen: Firmenlogo, Bankverbindung, Zahlungsziel, Nummern-Präfixe und Standardtexte',
+    'Belege und Fotos gleichen sich zwischen den Geräten ab und sind im Backup enthalten'
+  ]],
   ['2.2.2', 12, '05.11.2026', ['Ältere Tablets: Kacheln, Karten und Warenkorb stehen wieder nebeneinander statt untereinander', 'Symbole, die ältere Geräte nicht kennen, durch passende ersetzt', 'Einstellungen → „Was ist neu?“ zeigt die WebView-Version des Geräts']],
   ['2.2.1', 11, '05.11.2026', ['Behoben: Auf älteren Tablets (z. B. Android 7.1.1) blieb die App leer', 'Startet jetzt auch mit älteren WebViews ab Chrome 57', 'Startet die App trotzdem nicht, erscheint ein Hinweis mit der WebView-Version des Geräts']],
   ['2.2.0', 10, '05.11.2026', ['Neues Logo und App-Icon: das Kontor-Haus mit den Modul-Kacheln', 'Neues Startbild (hell und dunkel) mit „Das ERP für Selbstständige“', 'Eigene farbige Symbole für jedes Modul (Einstellungen, Übersicht, Seitenleiste)']],

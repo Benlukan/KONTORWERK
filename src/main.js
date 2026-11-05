@@ -15,6 +15,7 @@ import {render} from './core/shell.js';
 // Reihenfolge = Reihenfolge in der Seitenleiste
 import './modules/kern/index.js';
 import './modules/wawi/index.js';
+import './modules/dokumente/index.js';
 import './modules/geplant.js';
 import {registerSystem} from './modules/kern/index.js';
 registerSystem();

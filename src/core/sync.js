@@ -10,12 +10,15 @@
  *               was lokal neuer ist als auf dem Server.
  * Konflikte: Die jüngere Änderung gewinnt. Gelöschtes bleibt als Grabstein erhalten.
  */
-import {K, setMeta, applyRemote, applyRemoteSettings, allRecords, flush, onLocalChange, TABLES} from './db.js';
+import {K, setMeta, applyRemote, applyRemoteSettings, allRecords, flush, onLocalChange, TABLES, FILES, getFile, applyRemoteFile} from './db.js';
 
 const COL = 'kw_daten';
 const SETTINGS_ROW = ['_einstellungen', 'main'];
 const LOCAL_ONLY = ['theme']; // bleibt je Gerät
-const BATCH = 40, BATCH_BYTES = 12 * 1024 * 1024;
+const BATCH = 40, BATCH_BYTES = 12 * 1024 * 1024, PAGE = 50;
+// Bereits auf dem Server liegende Dateien (Dateien ändern sich nie)
+const hoch = () => new Set(K.meta.dateiHoch || []);
+const markHoch = ids => { if (!ids.length) return; const s = hoch(); ids.forEach(i => s.add(i)); setMeta('dateiHoch', [...s]); };
 
 const listeners = new Set();
 export const onSyncStatus = fn => listeners.add(fn);
@@ -87,7 +90,8 @@ async function pull(full) {
   const filter = encodeURIComponent(parts.join(' && '));
   const server = new Map(); let maxUpd = c.lastPull || '', page = 1, got = 0, settingsChanged = false;
   for (;;) {
-    const r = await api(`/api/collections/${COL}/records?perPage=200&page=${page}&sort=updated,id&skipTotal=1${parts.length ? '&filter=' + filter : ''}`);
+    const r = await api(`/api/collections/${COL}/records?perPage=${PAGE}&page=${page}&sort=updated,id&skipTotal=1${parts.length ? '&filter=' + filter : ''}`);
+    const gotFiles = [];
     for (const it of r.items) {
       server.set(it.tabelle + '\u0000' + it.rid, it.geaendert || 0);
       if (it.updated > maxUpd) maxUpd = it.updated;
@@ -99,12 +103,19 @@ async function pull(full) {
         }
         continue;
       }
+      if (it.tabelle === FILES) {
+        const rec = it.geloescht ? {id: it.rid, geloescht: true} : {...it.daten, id: it.rid};
+        rec.geaendert = it.geaendert; rec.geraet = it.geraet;
+        if (await applyRemoteFile(rec)) got++;
+        gotFiles.push(it.rid); continue;
+      }
       if (!TABLES.includes(it.tabelle)) continue;
       const rec = it.geloescht ? {...(it.daten || {}), id: it.rid, geloescht: true} : {...it.daten, id: it.rid};
       rec.geaendert = it.geaendert; rec.geraet = it.geraet;
       if (applyRemote(it.tabelle, rec)) got++;
     }
-    if (r.items.length < 200) break;
+    markHoch(gotFiles);
+    if (r.items.length < PAGE) break;
     page++;
   }
   saveCfg({...cfg(), lastPull: maxUpd});
@@ -119,10 +130,22 @@ function rowFor(t, r) {
 }
 async function push(full, server) {
   const c = cfg(), since = c.lastPushAt || 0, startedAt = Date.now(), me = K.deviceId;
-  const rows = [];
+  const rows = [], up = hoch(), fileIds = [];
+  // Datei mitschicken, die zu einem Dokument gehört (einmalig; Grabstein, wenn das Dokument gelöscht ist)
+  const withFile = async r => {
+    if (!r.dateiId) return;
+    if (r.geloescht) { rows.push({id: pbId(FILES, r.dateiId), tabelle: FILES, rid: r.dateiId, daten: {}, geaendert: r.geaendert || 0, geraet: me, geloescht: true}); fileIds.push(r.dateiId); return; }
+    if (up.has(r.dateiId) || (full && server.has(FILES + '\u0000' + r.dateiId))) return;
+    const f = await getFile(r.dateiId); if (!f) return;
+    const {id, geaendert, geraet, geloescht, ...daten} = f;
+    rows.push({id: pbId(FILES, id), tabelle: FILES, rid: id, daten, geaendert: geaendert || 0, geraet: geraet || me, geloescht: false}); fileIds.push(id);
+  };
   for (const [t, r] of allRecords()) {
-    if (full) { if ((r.geaendert || 0) > (server.get(t + '\u0000' + r.id) ?? -1)) rows.push(rowFor(t, r)); }
-    else if (r.geraet === me && (r.geaendert || 0) > since) rows.push(rowFor(t, r));
+    let send = false;
+    if (full) send = (r.geaendert || 0) > (server.get(t + '\u0000' + r.id) ?? -1);
+    else send = r.geraet === me && (r.geaendert || 0) > since;
+    if (send) rows.push(rowFor(t, r));
+    if (t === 'dokument' && (send || (full && !r.geloescht))) await withFile(r);
   }
   const sTs = K.meta.settingsTs || 0;
   if (sTs && (full ? sTs > (server.get(SETTINGS_ROW.join('\u0000')) ?? -1) : sTs > since)) {
@@ -142,6 +165,7 @@ async function push(full, server) {
     batch.push(row); bytes += size;
   }
   await send();
+  markHoch(fileIds);
   saveCfg({...cfg(), lastPushAt: startedAt - 1000, needFull: false});
   return rows.length;
 }

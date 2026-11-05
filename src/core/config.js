@@ -1,8 +1,8 @@
 // Bei jeder Auslieferung hochzählen: hier, android/app/build.gradle, package.json, public/sw.js, CHANGELOG.md
 export const TOOL_CONFIG = {
   name: 'KONTORWERK',
-  version: '2.2.2',
-  build: 12,
+  version: '2.3.0',
+  build: 13,
   emoji: '🏛️',
   dbName: 'kontorwerk',
   // Altbestand aus WAWIWERK/KASSENWERK (wird beim ersten Start übernommen)

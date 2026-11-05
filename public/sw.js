@@ -1,5 +1,5 @@
 // KONTORWERK Service Worker – offline nutzbar (Web-Version)
-const CACHE = 'kontorwerk-v2.2.2-b12';
+const CACHE = 'kontorwerk-v2.3.0-b13';
 const FILES = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png', './apple-touch-icon.png',
   './fonts/inter-latin-400-normal.woff2', './fonts/inter-latin-500-normal.woff2', './fonts/inter-latin-600-normal.woff2', './fonts/inter-latin-700-normal.woff2', './fonts/inter-latin-800-normal.woff2'];
 self.addEventListener('install', e => { e.waitUntil(caches.open(CACHE).then(c => c.addAll(FILES))); self.skipWaiting(); });

@@ -22,8 +22,11 @@ function classicScript() {
 
 // Baut eine einzige www/index.html (JS + CSS eingebettet) – läuft im Browser, als PWA und in der Android-App.
 // Schriften, Icons, Manifest und Service Worker kommen unverändert aus public/.
+const stub = new URL('./src/stubs/empty.js', import.meta.url).pathname;
 export default defineConfig({
   base: './',
+  // jsPDF lädt diese Pakete nur für .html()/SVG – nicht gebraucht, hält die App klein
+  resolve: {alias: {html2canvas: stub, dompurify: stub, canvg: stub}},
   plugins: [viteSingleFile(), classicScript()],
   // Ziel: auch alte Android-WebViews (ab Chrome 55, z. B. Tablets mit Android 7)
   build: {
