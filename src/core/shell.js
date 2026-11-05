@@ -93,7 +93,7 @@ export function applyTheme() {
 }
 
 export function initShell() {
-  matchMedia('(prefers-color-scheme: dark)').addEventListener('change', applyTheme);
+  window.kwOnMedia(matchMedia('(prefers-color-scheme: dark)'), applyTheme);
   $('#themeBtn').onclick = () => {
     const dark = document.documentElement.getAttribute('data-theme') === 'dark';
     K.settings.theme = dark ? 'light' : 'dark'; applyTheme(); saveSettings();

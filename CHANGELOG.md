@@ -1,5 +1,10 @@
 # Changelog
 
+## v2.2.1 (Build 11) – 05.11.2026
+- **Behoben:** Auf älteren Tablets (Android 7.1.1 mit alter WebView) blieb die App leer – die WebView führte das als `type="module"` eingebundene Skript nicht aus
+- Bundle jetzt als klassisches Skript (IIFE) am Ende von `<body>`, Build-Ziel Chrome 55 (async/await wird übersetzt); `padStart`/`padEnd` und `matchMedia`-Listener für alte WebViews nachgerüstet
+- Startprüfung: Startet die App nach 6 Sekunden nicht, erscheint ein Hinweis mit WebView-Version, Fehlermeldung und Abhilfe
+
 ## v2.2.0 (Build 10) – 05.11.2026
 - **Neues Logo und App-Icon** nach Davids Entwurf: Kontor-Haus über sechs Modul-Kacheln auf Nachtblau – als Vektorgrafik nachgezeichnet (`src/core/brand.js`), daraus Android-Icons (adaptiv + klassisch), Web-Icons und Startbilder
 - Startbild hell und dunkel mit Schriftzug und „Das ERP für Selbstständige“

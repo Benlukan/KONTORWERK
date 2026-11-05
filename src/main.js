@@ -57,6 +57,7 @@ function back() {
   onRemoteChange(({settings}) => { if (settings) { applyTheme(); buildNav(); } if (!modalOpen()) render(); });
   $('#syncBtn').onclick = () => { if (connected()) syncNow(); else go('einstellungen'); };
   initSync(); syncIcon(status);
+  window.__kwStarted = true;
   if (mig) toast(`WAWIWERK-Daten übernommen: ${mig.products} Produkte, ${mig.sales} Verkäufe`);
 
   $('#overlay').onclick = () => { if (modalOpen()) closeModal(); else modules().forEach(m => m.onOverlay && m.onOverlay()); };
@@ -65,7 +66,7 @@ function back() {
     if (e.key === 'Escape') { if (lbOpen()) closeLightbox(); else if (modalOpen()) closeModal(); else modules().forEach(m => m.onOverlay && m.onOverlay()); }
   });
   let wasDesktop = matchMedia('(min-width:1024px)').matches;
-  matchMedia('(min-width:1024px)').addEventListener('change', e => { if (e.matches !== wasDesktop) { wasDesktop = e.matches; buildNav(); } });
+  window.kwOnMedia(matchMedia('(min-width:1024px)'), e => { if (e.matches !== wasDesktop) { wasDesktop = e.matches; buildNav(); } });
   if (IS_NATIVE && P.App) {
     P.App.addListener('backButton', back);
     P.App.addListener('pause', () => { flush(); if (connected()) syncNow(); });
