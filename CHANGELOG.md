@@ -1,5 +1,9 @@
 # Changelog
 
+## v2.5.4 (Build 19) – 06.11.2026
+- **Behoben:** Auf älteren WebViews wurde das Logo in der Seitenleiste abgeschnitten, sobald die Leiste mit vielen Modulen scrollbar war. Die alte WebView staucht die Einträge einer scrollbaren Flex-Leiste, statt zu scrollen. Jetzt gilt `.sidebar>*{flex-shrink:0}`.
+- `--safe-t`/`--safe-b` mit Rückfall für WebViews ohne `env()`/`max()`: Dort war jedes Padding mit diesen Variablen ungültig und fiel auf 0. Jetzt wird erst Capacitors `--safe-area-inset-*` verwendet, `env()`/`max()` nur über `@supports`.
+
 ## v2.5.3 (Build 18) – 06.11.2026
 - **Behoben:** Auf Android 10 und älter (z. B. Tablet mit Android 7.1.1) lag der Inhalt unter der Statusleiste; Logo und Name oben in der Seitenleiste waren abgeschnitten. Capacitor 8 behandelt die Systemleisten über einen eigenen Inset-Listener, der den Inhalt dort nicht zuverlässig verschiebt. Auf diesen Versionen gilt jetzt wieder das klassische Android-Verhalten (`setDecorFitsSystemWindows(true)`, eigener Listener entfernt): Die App beginnt unter der Statusleiste, die Statusleiste bekommt die App-Farbe. Die Navigationsleiste wird erst ab Android 8 hell eingefärbt, weil es davor keine dunklen Symbole gibt. Ab Android 11 unverändert.
 

@@ -28,6 +28,8 @@ img.brand-logo{background:none;padding:0;object-fit:cover;box-shadow:0 4px 14px 
   body{padding-bottom:0}
   .sidebar{display:flex;flex-direction:column;position:fixed;top:0;bottom:0;left:0;width:228px;z-index:60;background:var(--card);border-right:1px solid var(--border);padding:calc(var(--safe-t) + 12px) 10px 10px;overflow-y:auto}
   .sidebar .brand{padding:4px 6px 8px}
+  /* Alte WebViews stauchen Flex-Kinder einer scrollbaren Leiste, statt zu scrollen (Logo abgeschnitten) */
+  .sidebar>*{flex-shrink:0}
   .topbar,.container{margin-left:228px}
   .topbar .brand{visibility:hidden}
   .bottomnav{display:none}
