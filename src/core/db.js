@@ -216,9 +216,12 @@ export function flush() {
       if (t === 'meta') tx.objectStore('meta').put(clean, key); else tx.objectStore(t).put(clean);
     });
     tx.oncomplete = () => res(true);
-    tx.onerror = tx.onabort = () => { listeners.forEach(f => f(tx.error)); res(false); };
+    tx.onerror = tx.onabort = () => { lastErr = tx.error; listeners.forEach(f => f(tx.error)); res(false); };
   });
 }
+let lastErr = null;
+/** Letzter Fehler beim Ersetzen aller Daten (z. B. QuotaExceededError) */
+export const lastWriteError = () => lastErr;
 
 /** Alles ersetzen (Backup-Import, Migration, „Alle Daten löschen“). tables: {tabelle: [Datensätze]} */
 export async function replaceAll(tables, settings, extraMeta = {}, files = null) {
@@ -247,7 +250,7 @@ export async function replaceAll(tables, settings, extraMeta = {}, files = null)
     m.put(now, 'settingsTs');
     Object.entries(extraMeta).forEach(([k, v]) => m.put(v, k));
     tx.oncomplete = () => res(true);
-    tx.onerror = tx.onabort = () => { listeners.forEach(f => f(tx.error)); res(false); };
+    tx.onerror = tx.onabort = () => { lastErr = tx.error; listeners.forEach(f => f(tx.error)); res(false); };
   });
 }
 

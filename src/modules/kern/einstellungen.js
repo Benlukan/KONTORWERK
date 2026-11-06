@@ -151,15 +151,20 @@ export function initEinstellungen() {
   bind('#setHaptic', 'haptic', t => t.checked);
   $$('#themeSeg button').forEach(b => b.onclick = () => { K.settings.theme = b.dataset.t; applyTheme(); saveSettings(); });
   $('#importFile').onchange = e => {
-    const f = e.target.files[0]; if (!f) return; const fr = new FileReader();
+    const f = e.target.files[0]; e.target.value = ''; if (!f) return;
+    const mb = f.size / 1048576, fr = new FileReader();
+    if (mb > 1) toast(`Backup wird gelesen (${mb.toLocaleString('de-DE', {maximumFractionDigits: 1})} MB) …`);
+    fr.onerror = () => toast('Die Datei konnte nicht gelesen werden' + (fr.error && fr.error.name ? ` (${fr.error.name})` : '') + '. Lege sie in „Downloads“ ab und wähle sie dort aus.', true);
     fr.onload = async () => {
-      try {
-        const b = parseBackup(fr.result), n = b.summary;
-        const what = `${n.products} Produkte, ${n.categories} Kategorien, ${n.sales} Belege${n.contacts ? `, ${n.contacts} Kontakte` : ''}${n.docs ? `, ${n.docs} archivierte Dateien` : ''}`;
-        if (!await confirmBox('Backup wiederherstellen?', `${b.kind}-Backup: ${what} werden geladen. <b>Alle aktuellen Daten werden ersetzt.</b>${connected() ? ' Danach wird mit dem Server zusammengeführt – neuere Daten vom Server bleiben erhalten.' : ''}`, 'Wiederherstellen', true)) return;
-        await restoreBackup(b); toast('Backup wiederhergestellt'); refreshApp('einstellungen');
-      } catch (err) { toast('Datei ungültig: ' + err.message, true); }
-      e.target.value = '';
+      let b;
+      try { b = parseBackup(fr.result); } catch (err) { return toast(err.message, true); }
+      const n = b.summary;
+      const what = `${n.products} Produkte, ${n.categories} Kategorien, ${n.sales} Belege${n.contacts ? `, ${n.contacts} Kontakte` : ''}${n.docs ? `, ${n.docs} archivierte Dateien` : ''}`;
+      const neuer = b.build > TOOL_CONFIG.build || (b.fremd && b.fremd.length);
+      const info = b.version ? ` vom ${new Date(b.exported).toLocaleDateString('de-DE')} (Version ${esc(b.version)})` : '';
+      if (!await confirmBox('Backup wiederherstellen?', `${b.kind}-Backup${info}: ${what} werden geladen. <b>Alle aktuellen Daten werden ersetzt.</b>${connected() ? ' Danach wird mit dem Server zusammengeführt – neuere Daten vom Server bleiben erhalten.' : ''}${neuer ? `<br><br>⚠️ Das Backup stammt aus einer neueren App-Version als dieses Gerät (v${TOOL_CONFIG.version}). Aktualisiere die App hier am besten zuerst – sonst fehlen ${b.fremd && b.fremd.length ? 'manche Daten (' + b.fremd.map(esc).join(', ') + ')' : 'eventuell manche Daten'}.` : ''}`, 'Wiederherstellen', true)) return;
+      try { await restoreBackup(b); toast('Backup wiederhergestellt'); refreshApp('einstellungen'); }
+      catch (err) { toast(err.message || String(err), true); }
     };
     fr.readAsText(f);
   };

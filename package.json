@@ -1,6 +1,6 @@
 {
   "name": "kontorwerk",
-  "version": "2.5.0",
+  "version": "2.5.1",
   "private": true,
   "description": "KONTORWERK – modulares ERP für Maker: Warenwirtschaft, Verkauf, Kontakte und mehr",
   "scripts": {
