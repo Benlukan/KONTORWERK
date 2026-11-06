@@ -31,16 +31,19 @@ export function extfCsv(von, bis) {
     von.replace(/-/g, ''), bis.replace(/-/g, ''), q(`KONTORWERK ${von.slice(0, 7)}`), q('KW'), 1, 0, 0, q('EUR'), '', q(''), '', '', q('03'), '', '', q(''), q('')].join(';');
   const cols = 'Umsatz (ohne Soll/Haben-Kz);Soll/Haben-Kennzeichen;WKZ Umsatz;Kurs;Basis-Umsatz;WKZ Basis-Umsatz;Konto;Gegenkonto (ohne BU-Schlüssel);BU-Schlüssel;Belegdatum;Belegfeld 1;Belegfeld 2;Skonto;Buchungstext';
   const rows = buchungenIn(von, bis).map(b => {
+    const text = q(String(b.text || (KAT[b.kategorie] || {}).name || 'Umbuchung').slice(0, 60));
+    // Umbuchung: Zielkonto im Soll, Herkunftskonto als Gegenkonto
+    if (b.art === 'umbuchung') return [betrag(b.betrag), q(b.betrag > 0 ? 'S' : 'H'), q('EUR'), '', '', '', sachkonto(b.nach), sachkonto(b.konto), q(''), tag(b.datum), q(belegfeld(b.beleg)), q(''), '', text].join(';');
     // Geldkonto im Soll bei Zufluss (Einnahme/Einlage), im Haben bei Abfluss; negative Beträge kehren das um
     const zufluss = (b.art === 'einnahme' || b.art === 'einlage') === b.betrag > 0;
-    return [betrag(b.betrag), q(zufluss ? 'S' : 'H'), q('EUR'), '', '', '', sachkonto(b.konto), sachkonto(b.kategorie), q(''), tag(b.datum), q(belegfeld(b.beleg)), q(''), '', q(String(b.text || KAT[b.kategorie].name).slice(0, 60))].join(';');
+    return [betrag(b.betrag), q(zufluss ? 'S' : 'H'), q('EUR'), '', '', '', sachkonto(b.konto), sachkonto(b.kategorie), q(''), tag(b.datum), q(belegfeld(b.beleg)), q(''), '', text].join(';');
   });
   return [head, cols, ...rows].join('\r\n') + '\r\n';
 }
 
 export function buchungslisteCsv(von, bis) {
   const rows = [['Datum', 'Art', 'Kategorie', 'Sachkonto', 'Zahlungskonto', 'Betrag', 'Buchungstext', 'Beleg', 'Herkunft', 'Festgeschrieben']];
-  buchungenIn(von, bis).forEach(b => rows.push([deDay(b.datum), b.art, (KAT[b.kategorie] || {}).name || b.kategorie, sachkonto(b.kategorie), (ZK[b.konto] || {}).name || b.konto, (b.betrag < 0 ? '-' : '') + betrag(b.betrag), b.text, b.beleg, b.quelle ? b.quelle.split(':')[0] : 'manuell', b.festgeschrieben ? 'ja' : 'nein']));
+  buchungenIn(von, bis).forEach(b => rows.push([deDay(b.datum), b.art, (KAT[b.kategorie] || {}).name || b.kategorie, b.art === 'umbuchung' ? sachkonto(b.nach) : sachkonto(b.kategorie), (ZK[b.konto] || {}).name + (b.art === 'umbuchung' ? ' → ' + (ZK[b.nach] || {}).name : ''), (b.betrag < 0 ? '-' : '') + betrag(b.betrag), b.text, b.beleg, b.quelle ? b.quelle.split(':')[0] : 'manuell', b.festgeschrieben ? 'ja' : 'nein']));
   return csv(rows);
 }
 

@@ -1,17 +1,17 @@
 /* ═══════════════ BUCHUNGEN & KONTEN (Journal) ═══════════════ */
 import {$, $$, esc, eur, parseMoney, moneyIn} from '../../core/util.js';
-import {T, get, put, remove, flush} from '../../core/db.js';
+import {T, K, get, put, remove, flush} from '../../core/db.js';
 import {toast, openModal, closeModal, confirmBox} from '../../core/ui.js';
 import {render} from '../../core/shell.js';
 import {isoDay, deDay} from '../dokumente/shared.js';
-import {KAT, KAT_EIN, KAT_AUS, ZK, syncBuchungen, kontostand, wirkung, monate, pm} from './shared.js';
+import {KAT, KAT_EIN, KAT_AUS, ZK, zkName, syncBuchungen, kontostand, wirkung, monate, pm} from './shared.js';
 
 export const html = `
     <div class="stats-grid" id="bhKonten"></div>
     <div class="chips" id="bhYears" style="margin-top:12px"></div>
     <div class="row" style="margin-bottom:8px">
       <div class="field" style="margin:0"><select class="input" id="bhMonat"><option value="">Ganzes Jahr</option>${monate.map((m, i) => `<option value="${i + 1}">${m}</option>`).join('')}</select></div>
-      <div class="field" style="margin:0"><select class="input" id="bhArt"><option value="">Alle Buchungen</option><option value="einnahme">Einnahmen</option><option value="ausgabe">Ausgaben</option><option value="privat">Privat (Entnahmen/Einlagen)</option></select></div>
+      <div class="field" style="margin:0"><select class="input" id="bhArt"><option value="">Alle Buchungen</option><option value="einnahme">Einnahmen</option><option value="ausgabe">Ausgaben</option><option value="privat">Privat (Entnahmen/Einlagen)</option><option value="umbuchung">Umbuchungen</option></select></div>
       <div class="field" style="margin:0"><select class="input" id="bhKonto"><option value="">Alle Konten</option>${Object.entries(ZK).map(([k, v]) => `<option value="${k}">${v.name}</option>`).join('')}</select></div>
     </div>
     <div class="search" style="margin-bottom:8px"><input class="input" id="bhSearch" placeholder="Text, Belegnummer, Kategorie…"></div>
@@ -24,15 +24,18 @@ export const html = `
     <button class="fab" id="bhFab">＋ Buchung</button>`;
 
 const st = {year: String(new Date().getFullYear()), monat: '', art: '', konto: '', q: ''};
-const QUELLE = {bon: 'Verkauf (Bon)', zahlung: 'Rechnung bezahlt', erstattung: 'Gutschrift ausgezahlt', archiv: 'Belegarchiv', bank: 'Bankabgleich'};
+const QUELLE = {bon: 'Verkauf (Bon)', zahlung: 'Rechnung bezahlt', erstattung: 'Gutschrift ausgezahlt', archiv: 'Belegarchiv', bank: 'Bankabgleich', etsy: 'Etsy-Abrechnung', etsyg: 'Etsy-Abrechnung'};
 const quelleName = b => b.quelle ? QUELLE[b.quelle.split(':')[0]] || '' : 'manuell';
 const katName = k => (KAT[k] || {}).name || k || '';
+const kontoTxt = b => b.art === 'umbuchung' ? `${zkName(b.konto)} → ${zkName(b.nach)}` : zkName(b.konto);
+/** Konten mit Karte: Etsy nur, wenn es genutzt wird */
+const kontenSichtbar = () => Object.keys(ZK).filter(k => k !== 'etsy' || T.buchung.some(b => b.konto === 'etsy' || b.nach === 'etsy') || (K.settings.kontoStart.etsy || 0) !== 0);
 
 function filtered() {
   const pre = st.monat ? pm(st.year, st.monat) : st.year, q = st.q.trim().toLowerCase();
   return T.buchung.filter(b => (b.datum || '').startsWith(pre))
     .filter(b => !st.art || (st.art === 'privat' ? (b.art === 'entnahme' || b.art === 'einlage') : b.art === st.art))
-    .filter(b => !st.konto || b.konto === st.konto)
+    .filter(b => !st.konto || b.konto === st.konto || b.nach === st.konto)
     .filter(b => !q || [b.text, b.beleg, katName(b.kategorie), quelleName(b)].join(' ').toLowerCase().includes(q))
     .sort((a, b) => (b.datum || '').localeCompare(a.datum || '') || (b.erstellt || 0) - (a.erstellt || 0));
 }
@@ -40,9 +43,9 @@ function filtered() {
 export function renderBuchungen() {
   const n = syncBuchungen(); if (n) flush();
   const heute = isoDay(Date.now());
-  $('#bhKonten').innerHTML = Object.entries(ZK).map(([k, v], i) => {
-    const s = kontostand(k, heute);
-    return `<div class="stat-card" style="--sc:${['var(--ok)', 'var(--indigo)', 'var(--warn)'][i]}"><div class="sc-label">${v.name}</div><div class="sc-value" style="${s < 0 && k === 'kasse' ? 'color:var(--danger)' : ''}">${eur(s)}</div><div class="sc-sub">${k === 'kasse' && s < 0 ? '⚠️ Kasse darf nicht negativ sein' : 'Stand heute'}</div></div>`;
+  $('#bhKonten').innerHTML = kontenSichtbar().map(k => {
+    const v = ZK[k], s = kontostand(k, heute);
+    return `<div class="stat-card" style="--sc:${{kasse: 'var(--ok)', bank: 'var(--indigo)', paypal: 'var(--warn)', etsy: '#f1641e'}[k]}"><div class="sc-label">${v.name}</div><div class="sc-value" style="${s < 0 && k === 'kasse' ? 'color:var(--danger)' : ''}">${eur(s)}</div><div class="sc-sub">${k === 'kasse' && s < 0 ? '⚠️ Kasse darf nicht negativ sein' : 'Stand heute'}</div></div>`;
   }).join('');
   const years = [...new Set([String(new Date().getFullYear()), ...T.buchung.map(b => (b.datum || '').slice(0, 4)).filter(Boolean)])].sort().reverse();
   $('#bhYears').innerHTML = years.map(y => `<button class="chip ${st.year === y ? 'active' : ''}" data-y="${y}">${y}</button>`).join('');
@@ -57,10 +60,10 @@ export function renderBuchungen() {
     return;
   }
   $('#bhList').innerHTML = list.length ? `<div class="list">${list.slice(0, 400).map(b => {
-    const w = wirkung(b);
-    return `<button class="li" data-id="${b.id}"><div class="li-thumb">${b.art === 'einnahme' ? '⬆️' : b.art === 'ausgabe' ? '⬇️' : '👤'}</div>
-      <div class="li-main"><div class="li-title">${esc(b.text || katName(b.kategorie))}</div><div class="li-sub">${deDay(b.datum)} · ${esc(katName(b.kategorie))} · ${ZK[b.konto] ? ZK[b.konto].name : ''}${b.beleg ? ' · ' + esc(b.beleg) : ''} · ${quelleName(b)}${b.festgeschrieben ? ' · 🔒' : ''}</div></div>
-      <div class="li-end"><b class="num" style="color:${w >= 0 ? 'var(--ok)' : 'var(--danger)'}">${w > 0 ? '+' : ''}${eur(w)}</b></div></button>`;
+    const w = wirkung(b), um = b.art === 'umbuchung';
+    return `<button class="li" data-id="${b.id}"><div class="li-thumb">${b.art === 'einnahme' ? '⬆️' : b.art === 'ausgabe' ? '⬇️' : um ? '🔁' : '👤'}</div>
+      <div class="li-main"><div class="li-title">${esc(b.text || katName(b.kategorie) || 'Umbuchung')}</div><div class="li-sub">${deDay(b.datum)} · ${um ? 'Umbuchung' : esc(katName(b.kategorie))} · ${kontoTxt(b)}${b.beleg ? ' · ' + esc(b.beleg) : ''} · ${quelleName(b)}${b.festgeschrieben ? ' · 🔒' : ''}</div></div>
+      <div class="li-end"><b class="num" style="color:${um ? 'var(--muted)' : w >= 0 ? 'var(--ok)' : 'var(--danger)'}">${um ? eur(b.betrag) : (w > 0 ? '+' : '') + eur(w)}</b></div></button>`;
   }).join('')}${list.length > 400 ? `<div class="li muted" style="justify-content:center;font-size:.8rem">… ${list.length - 400} weitere – Zeitraum eingrenzen</div>` : ''}</div>`
     : `<div class="card empty"><div>🔍</div><p>Keine Buchungen in dieser Ansicht.</p></div>`;
   $$('#bhList [data-id]').forEach(el => el.onclick = () => openBuchung(el.dataset.id));
@@ -69,26 +72,30 @@ export function renderBuchungen() {
 /** Buchung anlegen/bearbeiten. vorgabe: Felder für eine neue Buchung (z. B. aus dem Bankabgleich) */
 export function editBuchung(id, vorgabe, onSaved) {
   const b = id ? get('buchung', id) : {datum: isoDay(Date.now()), art: 'ausgabe', kategorie: 'material', konto: 'bank', betrag: null, text: '', beleg: '', ...(vorgabe || {})};
-  const katOpts = art => (art === 'einnahme' ? KAT_EIN : art === 'ausgabe' ? KAT_AUS : [art]).map(k => `<option value="${k}" ${k === b.kategorie ? 'selected' : ''}>${esc(KAT[k].name)}</option>`).join('');
+  const katOpts = art => (art === 'einnahme' ? KAT_EIN : art === 'ausgabe' ? KAT_AUS : art === 'umbuchung' ? [] : [art]).map(k => `<option value="${k}" ${k === b.kategorie ? 'selected' : ''}>${esc(KAT[k].name)}</option>`).join('');
   openModal(id ? 'Buchung bearbeiten' : 'Neue Buchung', `
-    <div class="segment" id="bArt">${[['einnahme', '⬆️ Einnahme'], ['ausgabe', '⬇️ Ausgabe'], ['entnahme', '👤 Entnahme'], ['einlage', '💰 Einlage']].map(([k, l]) => `<button data-a="${k}" class="${b.art === k ? 'active' : ''}">${l}</button>`).join('')}</div>
+    <div class="segment" id="bArt">${[['einnahme', '⬆️ Einnahme'], ['ausgabe', '⬇️ Ausgabe'], ['entnahme', '👤 Entnahme'], ['einlage', '💰 Einlage'], ['umbuchung', '🔁 Umbuchung']].map(([k, l]) => `<button data-a="${k}" class="${b.art === k ? 'active' : ''}">${l}</button>`).join('')}</div>
     <div class="row"><div class="field"><label>Datum (Zahlung)</label><input class="input" type="date" id="bDat" value="${b.datum}"></div>
     <div class="field"><label>Betrag (€)</label><input class="input" id="bBet" inputmode="decimal" value="${moneyIn(b.betrag)}" placeholder="0,00" style="font-weight:700"></div></div>
-    <div class="row"><div class="field"><label>Kategorie</label><select class="input" id="bKatSel">${katOpts(b.art)}</select></div>
-    <div class="field" style="flex:0 0 34%"><label>Konto</label><select class="input" id="bKto">${Object.entries(ZK).map(([k, v]) => `<option value="${k}" ${k === b.konto ? 'selected' : ''}>${v.name}</option>`).join('')}</select></div></div>
+    <div class="row"><div class="field" id="bKatF"><label>Kategorie</label><select class="input" id="bKatSel">${katOpts(b.art)}</select></div>
+    <div class="field" style="flex:0 0 34%"><label id="bKtoL">Konto</label><select class="input" id="bKto">${Object.entries(ZK).map(([k, v]) => `<option value="${k}" ${k === b.konto ? 'selected' : ''}>${v.name}</option>`).join('')}</select></div>
+    <div class="field" id="bNachF" style="flex:0 0 34%"><label>Nach</label><select class="input" id="bNach">${Object.entries(ZK).map(([k, v]) => `<option value="${k}" ${k === (b.nach || (b.konto === 'bank' ? 'kasse' : 'bank')) ? 'selected' : ''}>${v.name}</option>`).join('')}</select></div></div>
     <div class="field"><label>Buchungstext</label><input class="input" id="bTxt" value="${esc(b.text)}" placeholder="z. B. Etsy-Auszahlung Oktober"></div>
     <div class="field"><label>Belegnummer</label><input class="input" id="bBel" value="${esc(b.beleg)}" placeholder="optional"></div>
     ${b.art === 'entnahme' || b.art === 'einlage' ? '' : `<div class="muted" style="font-size:.75rem">Gebucht wird am Tag der Zahlung (Zufluss-/Abflussprinzip der EÜR).</div>`}`,
     `${id ? `<button class="btn btn-danger" id="bDelB">Löschen</button>` : ''}<button class="btn btn-primary" id="bSaveB">Speichern</button>`);
   let art = b.art;
+  const umb = () => { const u = art === 'umbuchung'; $('#bKatF').classList.toggle('hidden', u); $('#bNachF').classList.toggle('hidden', !u); $('#bKtoL').textContent = u ? 'Von' : 'Konto'; };
+  umb();
   $$('#bArt button').forEach(x => x.onclick = () => {
     art = x.dataset.a; $$('#bArt button').forEach(y => y.classList.toggle('active', y === x));
-    b.kategorie = art === 'einnahme' ? 'umsatz' : art === 'ausgabe' ? 'material' : art; $('#bKatSel').innerHTML = katOpts(art);
+    b.kategorie = art === 'einnahme' ? 'umsatz' : art === 'ausgabe' ? 'material' : art === 'umbuchung' ? '' : art; $('#bKatSel').innerHTML = katOpts(art); umb();
   });
   $('#bSaveB').onclick = () => {
     const v = parseMoney($('#bBet').value);
     if (isNaN(v) || v <= 0) return toast('Bitte Betrag eingeben', true);
-    const data = {datum: $('#bDat').value || isoDay(Date.now()), art, kategorie: $('#bKatSel').value, konto: $('#bKto').value, betrag: v, text: $('#bTxt').value.trim(), beleg: $('#bBel').value.trim()};
+    const data = {datum: $('#bDat').value || isoDay(Date.now()), art, kategorie: art === 'umbuchung' ? '' : $('#bKatSel').value, konto: $('#bKto').value, nach: art === 'umbuchung' ? $('#bNach').value : null, betrag: v, text: $('#bTxt').value.trim(), beleg: $('#bBel').value.trim()};
+    if (art === 'umbuchung' && data.konto === data.nach) return toast('Von- und Nach-Konto müssen verschieden sein', true);
     const saved = id ? put('buchung', Object.assign(b, data)) : put('buchung', {...b, ...data});
     closeModal(); toast('Gebucht'); if (onSaved) onSaved(saved); render();
   };
@@ -105,12 +112,12 @@ function openBuchung(id) {
       <div class="rr"><span>Datum</span><span>${deDay(b.datum)}</span></div>
       <div class="rr"><span>Art</span><span>${esc(b.art)}</span></div>
       <div class="rr"><span>Betrag</span><span><b>${eur(b.betrag)}</b></span></div>
-      <div class="rr"><span>Kategorie</span><span>${esc(katName(b.kategorie))}</span></div>
-      <div class="rr"><span>Konto</span><span>${ZK[b.konto] ? ZK[b.konto].name : ''}</span></div>
+      ${b.art === 'umbuchung' ? '' : `<div class="rr"><span>Kategorie</span><span>${esc(katName(b.kategorie))}</span></div>`}
+      <div class="rr"><span>Konto</span><span>${kontoTxt(b)}</span></div>
       ${b.beleg ? `<div class="rr"><span>Beleg</span><span>${esc(b.beleg)}</span></div>` : ''}
       <div class="rr"><span>Herkunft</span><span>${quelleName(b)}${b.korrektur ? ' (Korrektur)' : ''}</span></div>
       <div class="rr"><span>Status</span><span>${b.festgeschrieben ? '🔒 festgeschrieben' : 'offen'}</span></div></div>
-      <p class="muted" style="font-size:.8rem;line-height:1.5;margin-top:10px">${b.auto ? 'Diese Buchung entsteht automatisch. Änderungen machst du an der Quelle (Bon, Rechnung oder Beleg) – KONTORWERK zieht die Buchung nach' + (b.festgeschrieben ? ' und trägt bei festgeschriebenen Monaten eine Korrekturbuchung ein.' : '.') : 'Festgeschriebene Buchungen lassen sich nicht ändern. Für eine Korrektur erstellst du eine Gegenbuchung.'}</p>`,
+      <p class="muted" style="font-size:.8rem;line-height:1.5;margin-top:10px">${b.auto ? 'Diese Buchung entsteht automatisch. Änderungen machst du an der Quelle (Bon, Rechnung, Beleg oder Etsy-Abrechnung) – KONTORWERK zieht die Buchung nach' + (b.festgeschrieben ? ' und trägt bei festgeschriebenen Monaten eine Korrekturbuchung ein.' : '.') : 'Festgeschriebene Buchungen lassen sich nicht ändern. Für eine Korrektur erstellst du eine Gegenbuchung.'}</p>`,
     b.festgeschrieben && !b.auto ? `<button class="btn btn-danger" id="bGegen">↩ Gegenbuchung erstellen</button>` : '');
   if ($('#bGegen')) $('#bGegen').onclick = () => {
     const {id: _i, erstellt, geaendert, geraet, festgeschrieben, festTs, ...rest} = b;

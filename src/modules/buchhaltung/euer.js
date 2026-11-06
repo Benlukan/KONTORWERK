@@ -51,6 +51,8 @@ export function renderEuer() {
   const dv = K.settings.datev, warn = [];
   if (!dv.berater || !dv.mandant) warn.push('Berater- und Mandantennummer fehlen (Einstellungen → Buchhaltung). Die bekommst du von deiner Steuerberatung.');
   if (T.bankumsatz.some(b => b.status === 'offen' && b.datum.startsWith(String(y)))) warn.push(`Im Bankabgleich gibt es noch offene Umsätze aus ${y}.`);
+  const ohne = monate.map((m, i) => [m, pm(y, i + 1)]).filter(([, pre]) => T.bestellung.some(o => (o.datum || '').startsWith(pre) && o.status !== 'storniert' && !T.shopposten.some(p => p.shopId === o.shopId && p.datum.startsWith(pre))));
+  if (ohne.length) warn.push(`Etsy: Für ${ohne.map(([m]) => m).join(', ')} gibt es Bestellungen, aber noch keine Monatsabrechnung. Ohne sie fehlen Etsy-Verkäufe und -Gebühren in der EÜR (E-Commerce → Etsy-Konto).`);
   $('#euWarn').innerHTML = warn.map(w => `<div class="alert warn" style="margin:0 0 10px">${w}</div>`).join('');
 }
 

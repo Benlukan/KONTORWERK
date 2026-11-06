@@ -17,7 +17,7 @@ export function stockState(p) {
 export function addMove(pid, qty, type, note, ref) {
   put('lagerbewegung', {ts: Date.now(), pid, qty, type, note: note || '', ref: ref || null});
 }
-export const MOVE_LBL = {sale: '📃 Verkauf', in: '📥 Zugang', out: '📤 Abgang', inv: '📋 Inventur', storno: '↩️ Storno', init: '✨ Anfangsbestand', doc: '📄 Rechnung/Lieferschein'};
+export const MOVE_LBL = {sale: '📃 Verkauf', in: '📥 Zugang', out: '📤 Abgang', inv: '📋 Inventur', storno: '↩️ Storno', init: '✨ Anfangsbestand', doc: '📄 Rechnung/Lieferschein', etsy: '🛒 Etsy-Bestellung'};
 
 export const photosOf = p => (p.photos && p.photos.length) ? p.photos : (p.img ? [{t: p.img, f: p.imgFull || p.img}] : []);
 export function thumb(p) {

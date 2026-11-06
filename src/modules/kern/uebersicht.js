@@ -29,12 +29,12 @@ function watchHtml() {
   return `<div class="section-title" style="margin-top:4px">📃 Kleinunternehmer-Grenzen (§ 19 UStG) <button class="btn btn-sm" id="dashExtra">Umsätze nachtragen</button></div>
     <div class="watch">
       <div class="card"><h4><span>Laufendes Jahr ${y}</span><span class="muted">max. 100.000 €</span></h4><div class="big">${eur(now.total)}</div>${meter(now.total, GRENZE_LAUFEND)}
-        <div class="muted" style="font-size:.75rem">${eur(now.inApp)} in KONTORWERK${now.extra ? ` + ${eur(now.extra)} nachgetragen` : ''}</div></div>
+        <div class="muted" style="font-size:.75rem">${eur(now.inApp)} in KONTORWERK${now.etsy ? ` + ${eur(now.etsy)} Etsy` : ''}${now.extra ? ` + ${eur(now.extra)} nachgetragen` : ''}</div></div>
       <div class="card"><h4><span>Vorjahr ${y - 1}</span><span class="muted">max. 25.000 €</span></h4><div class="big">${eur(prev.total)}</div>${meter(prev.total, GRENZE_VORJAHR)}
-        <div class="muted" style="font-size:.75rem">${eur(prev.inApp)} in KONTORWERK${prev.extra ? ` + ${eur(prev.extra)} nachgetragen` : ''}</div></div>
+        <div class="muted" style="font-size:.75rem">${eur(prev.inApp)} in KONTORWERK${prev.etsy ? ` + ${eur(prev.etsy)} Etsy` : ''}${prev.extra ? ` + ${eur(prev.extra)} nachgetragen` : ''}</div></div>
     </div>
     ${alerts.map(([k, t]) => `<div class="alert ${k}">${t}</div>`).join('')}
-    <div class="muted" style="font-size:.75rem;margin-top:8px;line-height:1.5">Verkäufe über Etsy oder andere Kanäle zählen mit. Bis das E-Commerce-Modul sie automatisch holt, trag sie über „Umsätze nachtragen“ ein.</div>`;
+    <div class="muted" style="font-size:.75rem;margin-top:8px;line-height:1.5">Eingelesene Etsy-Bestellungen zählen automatisch mit. Umsätze aus anderen Kanälen trägst du über „Umsätze nachtragen“ ein – Etsy-Umsätze, die du dort früher eingetragen hast, nimm bitte wieder heraus, sonst zählen sie doppelt.</div>`;
 }
 
 function extraDialog() {
