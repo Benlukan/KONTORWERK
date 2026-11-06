@@ -1,5 +1,24 @@
 # Changelog
 
+## v2.5.0 (Build 15) – 06.11.2026
+- **Modul E-Commerce (Etsy)** (Phase 4, CSV-Import; die API-Anbindung folgt als 4.1)
+  - Mehrere Shops mit Art „Handgemacht / mit Lager“ oder „Digital“ (Einstellungen → E-Commerce); Auswertungen je Shop oder gesamt
+  - **Import** der Etsy-Dateien mit automatischer Erkennung: Bestellungen (`EtsySoldOrders`), bestellte Artikel (`EtsySoldOrderItems`), Angebote (`EtsyListingsDownload`), Monatsabrechnung (`etsy_statement`) – englisch oder deutsch, UTF-8 oder Windows-1252, Komma oder Semikolon; mehrere Dateien auf einmal; ids aus Shop + Etsy-Nummer, daher auch über mehrere Geräte keine Doppelten
+  - **Bestellungen**: Liste mit Status (offen, versendet, digital erledigt, storniert), Suche, Kennzahlen; Detail mit Lieferanschrift (kopieren), Artikeln, Warenwert, Rabatt, Versand, Steuer und Netto laut Etsy; versendet mit Datum und Sendungsnummer; Lieferschein oder Rechnung aus der Bestellung (ohne erneute Bestandsbuchung); Käufer als Kontakt; Storno
+  - **Bestand**: neue, noch nicht versendete Bestellungen buchen den Bestand ab (wählbar: alle / keine); jede Position genau einmal; Storno bucht zurück; Lagerbewegung „Etsy-Bestellung“
+  - **Etsy-Artikel**: Katalog aus Angeboten und Bestellungen, automatische Verknüpfung über Artikelnummer oder Namen, sonst von Hand; Produkte aus Angeboten anlegen (einzeln oder alle); Filter „Bestand abweichend“
+  - **Etsy-Konto**: Guthaben, Verkäufe, Kosten (mit Anteil an den Verkäufen) und Auszahlungen je Jahr und Monat; Hinweis bei Monaten mit Bestellungen, aber ohne Abrechnung; Einordnung jeder Abrechnungszeile änderbar; Monat entfernen und neu einlesen
+- **Buchhaltung**
+  - Monatsabrechnung wird automatisch gebucht: Verkäufe und Erstattungen (Umsatzerlöse), Gebühren inkl. USt auf Gebühren (4970), Etsy Ads/Offsite Ads (4600), Versandetiketten (4910), Auszahlungen als Umbuchung Etsy → Bank; vom Käufer gezahlte und von Etsy abgeführte Steuer wird nicht gebucht
+  - Neues Geldkonto **Etsy-Guthaben** (SKR03-Vorschlag 1360) mit Kontostand und Anfangsbestand
+  - Neue Buchungsart **Umbuchung** zwischen eigenen Konten (zählt nicht zur EÜR), auch von Hand und im Bankabgleich; DATEV-Export als Zielkonto an Herkunftskonto
+  - Bankabgleich schlägt passende Umbuchungen (±7 Tage) vor, z. B. die Etsy-Auszahlung
+  - EÜR & Export warnt, wenn für Monate mit Etsy-Bestellungen die Monatsabrechnung fehlt
+- Übersicht: Kennzahlen „Etsy: zu versenden“ und „Etsy diesen Monat“; Kleinunternehmer-Wächter zählt Etsy-Bestellungen (ohne von Etsy eingezogene Steuer)
+- CSV-Helfer zentral in `src/core/csvimport.js` (englische und deutsche Beträge und Daten)
+- Web-Version: Cache-Name des Service Workers wieder an die Version gekoppelt (war in v2.4.0 nicht hochgezählt)
+- Datenbank-Version 4 (neue Tabellen `bestellung`, `shopposten`, `shopartikel`, Upgrade automatisch, alles wird abgeglichen)
+
 ## v2.4.0 (Build 14) – 05.11.2026
 - **Modul Buchhaltung (EÜR)** (Phase 3)
   - Zufluss-/Abflussprinzip: gebucht wird am Zahlungstag

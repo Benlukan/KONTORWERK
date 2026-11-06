@@ -18,6 +18,7 @@ import './modules/wawi/index.js';
 import './modules/dokumente/index.js';
 import './modules/buchhaltung/index.js';
 import './modules/lohn/index.js';
+import './modules/ecommerce/index.js';
 import './modules/geplant.js';
 import {registerSystem} from './modules/kern/index.js';
 registerSystem();

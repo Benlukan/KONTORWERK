@@ -10,9 +10,9 @@
 import {TOOL_CONFIG} from './config.js';
 import {uid} from './util.js';
 
-export const TABLES = ['kontakt', 'kategorie', 'produkt', 'lagerbewegung', 'beleg', 'tagesabschluss', 'dokument', 'buchung', 'bankumsatz'];
+export const TABLES = ['kontakt', 'kategorie', 'produkt', 'lagerbewegung', 'beleg', 'tagesabschluss', 'dokument', 'buchung', 'bankumsatz', 'bestellung', 'shopposten', 'shopartikel'];
 export const FILES = 'datei';
-const DB_VERSION = 3;
+const DB_VERSION = 4;
 
 export const DEFAULT_SETTINGS = {
   // Firma
@@ -31,6 +31,8 @@ export const DEFAULT_SETTINGS = {
   konten: {},        // Kategorie/Zahlungskonto → Sachkonto (Abweichungen vom SKR03-Vorschlag)
   kontoStart: {},    // Anfangsbestände {kasse, bank, paypal} in Cent
   kontoStartDatum: '',
+  // E-Commerce: Shops [{id, name, plattform:'etsy', art:'physisch'|'digital', bestand:true}]
+  shops: [],
   // Unternehmerlohn
   wunschlohn: 0, ruecklage: 30,
   // Steuer & Verkauf
@@ -110,6 +112,7 @@ export function mergeSettings(s) {
   out.datev = {...DEFAULT_SETTINGS.datev, ...(s && s.datev || {})};
   out.konten = {...(s && s.konten || {})};
   out.kontoStart = {...(s && s.kontoStart || {})};
+  out.shops = (s && Array.isArray(s.shops) ? s.shops : []).map(x => ({...x}));
   return out;
 }
 

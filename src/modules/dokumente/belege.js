@@ -189,7 +189,7 @@ export function editDoc(d, art) {
 
 /* ─── Abschließen ─── */
 function stockLines(d) {
-  if (!ART[d.art].lager || !isActive('wawi') || d.lagerGebucht) return [];
+  if (!ART[d.art].lager || !isActive('wawi') || d.lagerGebucht || d.keinLager) return [];
   return d.positionen.filter(p => { const pr = p.pid && prodById(p.pid); return pr && pr.trackStock && p.menge > 0; });
 }
 function finalize(id) {

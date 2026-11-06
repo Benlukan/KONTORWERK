@@ -38,7 +38,7 @@ export function renderKontakte() {
   $$('#ktList [data-id]').forEach(b => b.onclick = () => editKontakt(b.dataset.id));
 }
 
-function nextNr(typ) {
+export function nextNr(typ) {
   const pre = typ === 'lieferant' ? 'L' : 'K';
   const max = T.kontakt.map(k => k.nr || '').filter(n => n.startsWith(pre)).map(n => parseInt(n.slice(1), 10) || 0).reduce((a, b) => Math.max(a, b), 1000);
   return pre + (max + 1);

@@ -17,8 +17,10 @@ export function umsatzJahr(y) {
     // eigenständige Gutschrift (z. B. Rücknahme) mindert den Umsatz; Storno-Gutschriften nicht – dort zählt die Rechnung schon nicht mehr
     else if (b.art === 'gutschrift' && !b.stornoVon) inApp -= b.total || 0;
   });
+  // Etsy-Bestellungen (E-Commerce-Modul), ohne Steuer, die Etsy beim Käufer einzieht
+  const etsy = T.bestellung.reduce((a, o) => a + (o.status !== 'storniert' && (o.datum || '').startsWith(String(y)) ? o.umsatz || 0 : 0), 0);
   const extra = K.settings.umsatzExtra[y] || 0;
-  return {inApp, extra, total: inApp + extra};
+  return {inApp, etsy, extra, total: inApp + etsy + extra};
 }
 
 /** Stufe für die Anzeige: ok | warn | danger */

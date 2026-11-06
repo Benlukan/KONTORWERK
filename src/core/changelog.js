@@ -1,5 +1,16 @@
 /* „Was ist neu?“ – in der App angezeigt (ausführlich: CHANGELOG.md) */
 export const CHANGELOG = [
+  ['2.5.0', 15, '06.11.2026', [
+    'Neues Modul <b>E-Commerce (Etsy)</b> für einen oder mehrere Shops, z. B. Handgemachtes und digitale Produkte getrennt',
+    'Etsy-Dateien einlesen: Bestellungen, bestellte Artikel, Angebote und Monatsabrechnung – alle auf einmal, ohne Doppelte',
+    '<b>Bestellungen</b>: Anschrift kopieren, als versendet markieren (mit Sendungsnummer), Lieferschein oder Rechnung mit einem Tipp',
+    'Bestand wird bei neuen Etsy-Bestellungen automatisch abgebucht, bei Storno zurückgebucht',
+    '<b>Etsy-Artikel</b>: Angebote einmal mit deinen Produkten verknüpfen oder daraus Produkte anlegen; zeigt, wo der Etsy-Bestand abweicht',
+    '<b>Etsy-Konto</b>: Verkäufe, Gebühren, Werbung, Versandetiketten und Auszahlungen je Monat – daraus entstehen die Buchungen',
+    'Buchhaltung: neues Geldkonto „Etsy-Guthaben“ und Buchungsart <b>Umbuchung</b> (z. B. Etsy-Auszahlung oder Bareinzahlung auf die Bank)',
+    'Bankabgleich erkennt Etsy-Auszahlungen und ordnet sie zu, ohne doppelt zu buchen',
+    'Kleinunternehmer-Wächter zählt Etsy-Umsätze automatisch mit'
+  ]],
   ['2.4.0', 14, '05.11.2026', [
     'Neues Modul <b>Buchhaltung (EÜR)</b>: Kassenbons, bezahlte Rechnungen und Belege werden automatisch gebucht',
     'Eigene Buchungen für Einnahmen, Ausgaben, Privatentnahmen und Einlagen; Kontostände für Kasse, Bank und PayPal',
