@@ -1,5 +1,8 @@
 # Changelog
 
+## v2.5.5 (Build 20) – 06.11.2026
+- **Behoben:** Auf dem Tablet (Android 7.1.1, Custom-ROM) lag das Fenster trotz v2.5.3 unter der Statusleiste. Auf Android 10 und älter misst `MainActivity` jetzt nach (`getLocationOnScreen` der WebView gegen `status_bar_height`, nicht im Vollbild) und gibt den fehlenden Abstand als `--safe-area-inset-top` an die Seite. Das geschieht bei jedem Layout-Wechsel, kurz nach dem Start und beim Fortsetzen. Seitenleiste und Kopfzeile rücken um genau diesen Wert nach unten. Liegt das Fenster korrekt unter der Statusleiste, ist der Wert 0.
+
 ## v2.5.4 (Build 19) – 06.11.2026
 - **Behoben:** Auf älteren WebViews wurde das Logo in der Seitenleiste abgeschnitten, sobald die Leiste mit vielen Modulen scrollbar war. Die alte WebView staucht die Einträge einer scrollbaren Flex-Leiste, statt zu scrollen. Jetzt gilt `.sidebar>*{flex-shrink:0}`.
 - `--safe-t`/`--safe-b` mit Rückfall für WebViews ohne `env()`/`max()`: Dort war jedes Padding mit diesen Variablen ungültig und fiel auf 0. Jetzt wird erst Capacitors `--safe-area-inset-*` verwendet, `env()`/`max()` nur über `@supports`.

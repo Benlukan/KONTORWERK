@@ -1,5 +1,6 @@
 /* „Was ist neu?“ – in der App angezeigt (ausführlich: CHANGELOG.md) */
 export const CHANGELOG = [
+  ['2.5.5', 20, '06.11.2026', ['Behoben: Auf älteren Tablets (z. B. mit Custom-ROM) schob sich die Statusleiste über Logo und Kopfzeile – die App misst den Abstand jetzt selbst nach']],
   ['2.5.4', 19, '06.11.2026', ['Behoben: Auf älteren Tablets wurde das Logo oben in der Seitenleiste abgeschnitten, sobald die Leiste (viele Module) scrollbar war', 'Oberer und unterer Rand berücksichtigen die Systemleisten jetzt auch auf alten WebViews']],
   ['2.5.3', 18, '06.11.2026', ['Behoben: Auf älteren Tablets (Android 10 und älter) lag der obere Rand der App unter der Statusleiste – Logo und Name waren abgeschnitten', 'Die Statusleiste hat dort jetzt die Farbe der App']],
   ['2.5.2', 17, '06.11.2026', ['Behoben: Auf älteren Tablets fehlten im Verkauf die Produktfotos in den Kacheln', 'Bestandsanzeige („2 Stk“) steht dort wieder oben rechts']],
