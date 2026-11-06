@@ -1,5 +1,8 @@
 # Changelog
 
+## v2.5.3 (Build 18) – 06.11.2026
+- **Behoben:** Auf Android 10 und älter (z. B. Tablet mit Android 7.1.1) lag der Inhalt unter der Statusleiste; Logo und Name oben in der Seitenleiste waren abgeschnitten. Capacitor 8 behandelt die Systemleisten über einen eigenen Inset-Listener, der den Inhalt dort nicht zuverlässig verschiebt. Auf diesen Versionen gilt jetzt wieder das klassische Android-Verhalten (`setDecorFitsSystemWindows(true)`, eigener Listener entfernt): Die App beginnt unter der Statusleiste, die Statusleiste bekommt die App-Farbe. Die Navigationsleiste wird erst ab Android 8 hell eingefärbt, weil es davor keine dunklen Symbole gibt. Ab Android 11 unverändert.
+
 ## v2.5.2 (Build 17) – 06.11.2026
 - **Behoben:** Auf älteren Android-WebViews (z. B. Tablet mit Android 7.1.1) waren die Produktfotos in den Verkaufskacheln unsichtbar. Ältere WebViews ziehen den Inhalt einer `<button>`-Kachel nicht auf volle Breite; der Fotobereich ohne Text war dadurch 0 px breit. Fotobereich und Textbereich haben jetzt ausdrücklich volle Breite. Damit sitzt auch die Bestandsanzeige wieder oben rechts.
 

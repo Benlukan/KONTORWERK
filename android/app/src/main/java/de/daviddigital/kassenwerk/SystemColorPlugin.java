@@ -1,5 +1,6 @@
 package de.daviddigital.kassenwerk;
 
+import android.os.Build;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.view.View;
@@ -40,6 +41,12 @@ public class SystemColorPlugin extends Plugin {
         Window w = getActivity().getWindow();
         View decor = w.getDecorView();
         decor.setBackgroundColor(color);
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
+            // Ältere Android-Versionen zeichnen Status- und Navigationsleiste selbst – in App-Farbe einfärben
+            w.setStatusBarColor(color);
+            // Dunkle Symbole in der Navigationsleiste gibt es erst ab Android 8 – davor bleibt sie dunkel
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O || dark) w.setNavigationBarColor(color);
+        }
         WindowInsetsControllerCompat ic = WindowCompat.getInsetsController(w, decor);
         ic.setAppearanceLightStatusBars(!dark);
         ic.setAppearanceLightNavigationBars(!dark);
