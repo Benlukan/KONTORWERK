@@ -1,5 +1,8 @@
 # Changelog
 
+## v2.5.2 (Build 17) – 06.11.2026
+- **Behoben:** Auf älteren Android-WebViews (z. B. Tablet mit Android 7.1.1) waren die Produktfotos in den Verkaufskacheln unsichtbar. Ältere WebViews ziehen den Inhalt einer `<button>`-Kachel nicht auf volle Breite; der Fotobereich ohne Text war dadurch 0 px breit. Fotobereich und Textbereich haben jetzt ausdrücklich volle Breite. Damit sitzt auch die Bestandsanzeige wieder oben rechts.
+
 ## v2.5.1 (Build 16) – 06.11.2026
 - **Behoben:** Auf älteren Android-Geräten (z. B. Tablet mit Android 7.1.1) ließ sich ein Backup vom Handy nicht auswählen. Der Dateifilter `application/json` wird an den Android-Auswahldialog weitergegeben; ältere Android-Versionen kennen den Dateityp von `.json` nicht und grauen die Datei aus. Auf Android wird der Filter für Backups und CSV-Importe (Bankabgleich, Etsy) jetzt beim Öffnen entfernt; geprüft wird stattdessen der Inhalt. Foto- und PDF-Auswahl bleiben gefiltert.
 - Backup wiederherstellen
