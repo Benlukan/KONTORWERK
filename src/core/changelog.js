@@ -1,5 +1,6 @@
 /* „Was ist neu?“ – in der App angezeigt (ausführlich: CHANGELOG.md) */
 export const CHANGELOG = [
+  ['2.5.3', 18, '06.11.2026', ['Behoben: Auf älteren Tablets (Android 10 und älter) lag der obere Rand der App unter der Statusleiste – Logo und Name waren abgeschnitten', 'Die Statusleiste hat dort jetzt die Farbe der App']],
   ['2.5.2', 17, '06.11.2026', ['Behoben: Auf älteren Tablets fehlten im Verkauf die Produktfotos in den Kacheln', 'Bestandsanzeige („2 Stk“) steht dort wieder oben rechts']],
   ['2.5.1', 16, '06.11.2026', [
     'Behoben: Ältere Tablets (z. B. Android 7) konnten Backups vom Handy nicht auswählen – die Datei war im Auswahldialog ausgegraut',
