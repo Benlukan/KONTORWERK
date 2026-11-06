@@ -1,5 +1,24 @@
 # Changelog
 
+## v2.4.0 (Build 14) – 05.11.2026
+- **Modul Buchhaltung (EÜR)** (Phase 3)
+  - Zufluss-/Abflussprinzip: gebucht wird am Zahlungstag
+  - Automatische Buchungen aus Kassenbons, bezahlten Rechnungen, ausgezahlten Gutschriften/Stornos und Belegen aus dem Archiv (neues Feld „Bezahlt über“); Änderungen an der Quelle werden nachgezogen
+  - Eigene Buchungen: Einnahme, Ausgabe, Privatentnahme, Privateinlage mit Kategorie, Zahlungskonto (Kasse/Bank/PayPal), Buchungstext und Belegnummer
+  - Kontostände mit Anfangsbestand und Stichtag, Warnung bei negativer Kasse
+  - **Monat festschreiben** (GoBD): festgeschriebene Buchungen sind unveränderbar; spätere Änderungen an Bons, Rechnungen oder Belegen erzeugen automatisch Korrekturbuchungen, eigene Buchungen werden per Gegenbuchung korrigiert
+- **Bankabgleich**: CSV-Kontoauszüge (Sparkasse, Volksbank, DKB, ING, PayPal u. a.) mit automatischer Spaltenerkennung, Zuordnung von Hand möglich; Windows-1252 und UTF-8; erneuter Import ohne Doppelte
+  - Vorschläge: Zahlungseingang ↔ offene Rechnung (Betrag oder Rechnungsnummer, markiert sie als bezahlt), Abbuchung ↔ Beleg im Archiv (Betrag, ±20 Tage)
+  - Neue Buchung direkt aus dem Umsatz, Ignorieren (z. B. Umbuchungen), Zuordnung zurücksetzen
+- **EÜR & Export**: Einnahmen, Ausgaben, Gewinn und Privat je Jahr, Ergebnis je Monat, Summen je Kategorie mit Sachkonto
+  - **DATEV-Buchungsstapel** (EXTF, Format 700, Windows-1252, SKR03) für Jahr, Quartal oder Monat
+  - **Paket für die Steuerberatung** (ZIP): Buchungsstapel, Buchungsliste, EÜR-Übersicht, alle Belege und Ausgangsrechnungen als PDF, Liesmich
+  - Einstellungen → Buchhaltung: Berater- und Mandantennummer, Beginn des Wirtschaftsjahrs, Anfangsbestände, eigene Sachkonten
+- **Modul Unternehmerlohn**: Gewinn bis heute, Steuerrücklage (einstellbar, Standard 30 %), schon entnommen und noch entnehmbar; Wunschlohn pro Monat mit Hinweis; Entnahme/Einlage mit einem Tipp buchen; Monatsübersicht
+- Übersicht: Kennzahlen „Gewinn“ und „Noch entnehmbar“
+- Rechnungen: „Erledigt“ bei Gutschriften fragt nach Auszahlungsdatum und Zahlart
+- Datenbank-Version 3 (neue Tabellen `buchung` und `bankumsatz`, Upgrade automatisch, beides wird abgeglichen)
+
 ## v2.3.0 (Build 13) – 05.11.2026
 - **Modul Dokumente** (Phase 2): Rechnung, Angebot, Lieferschein, Gutschrift
   - Editor mit Empfänger aus den Kontakten (oder neu, optional als Kontakt speichern), Produkten oder freien Positionen, Leistungs-/Lieferdatum, Zahlungsziel, Gültigkeit, Einleitungs- und Schlusstext, interner Notiz

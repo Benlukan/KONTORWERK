@@ -10,9 +10,9 @@
 import {TOOL_CONFIG} from './config.js';
 import {uid} from './util.js';
 
-export const TABLES = ['kontakt', 'kategorie', 'produkt', 'lagerbewegung', 'beleg', 'tagesabschluss', 'dokument'];
+export const TABLES = ['kontakt', 'kategorie', 'produkt', 'lagerbewegung', 'beleg', 'tagesabschluss', 'dokument', 'buchung', 'bankumsatz'];
 export const FILES = 'datei';
-const DB_VERSION = 2;
+const DB_VERSION = 3;
 
 export const DEFAULT_SETTINGS = {
   // Firma
@@ -26,6 +26,13 @@ export const DEFAULT_SETTINGS = {
   nrPrefix: {rechnung: 'RE', angebot: 'AN', lieferschein: 'LS', gutschrift: 'GS'},
   // Standardtexte der Dokumente
   docTexte: {},
+  // Buchhaltung
+  datev: {berater: '', mandant: '', wjBeginn: '0101'},
+  konten: {},        // Kategorie/Zahlungskonto → Sachkonto (Abweichungen vom SKR03-Vorschlag)
+  kontoStart: {},    // Anfangsbestände {kasse, bank, paypal} in Cent
+  kontoStartDatum: '',
+  // Unternehmerlohn
+  wunschlohn: 0, ruecklage: 30,
   // Steuer & Verkauf
   klein: true, taxDefault: 19, allowNegative: false, minDefault: 2, haptic: true,
   umsatzExtra: {}, // {Jahr: Cent} – Umsätze außerhalb von KONTORWERK (z. B. Etsy, bis das E-Commerce-Modul kommt)
@@ -100,6 +107,9 @@ export function mergeSettings(s) {
   out.umsatzExtra = {...(s && s.umsatzExtra || {})};
   out.nrPrefix = {...DEFAULT_SETTINGS.nrPrefix, ...(s && s.nrPrefix || {})};
   out.docTexte = {...(s && s.docTexte || {})};
+  out.datev = {...DEFAULT_SETTINGS.datev, ...(s && s.datev || {})};
+  out.konten = {...(s && s.konten || {})};
+  out.kontoStart = {...(s && s.kontoStart || {})};
   return out;
 }
 

@@ -1,5 +1,14 @@
 /* „Was ist neu?“ – in der App angezeigt (ausführlich: CHANGELOG.md) */
 export const CHANGELOG = [
+  ['2.4.0', 14, '05.11.2026', [
+    'Neues Modul <b>Buchhaltung (EÜR)</b>: Kassenbons, bezahlte Rechnungen und Belege werden automatisch gebucht',
+    'Eigene Buchungen für Einnahmen, Ausgaben, Privatentnahmen und Einlagen; Kontostände für Kasse, Bank und PayPal',
+    'Monat festschreiben: danach nur noch Korrekturbuchungen, wie es das Finanzamt verlangt',
+    '<b>Bankabgleich</b>: Kontoauszug als CSV einlesen, Zahlungen mit Vorschlag den offenen Rechnungen oder Belegen zuordnen',
+    '<b>EÜR-Übersicht</b> mit Gewinn je Monat und Kategorie',
+    '<b>Export für die Steuerberatung</b>: DATEV-Buchungsstapel (SKR03) oder Paket als ZIP mit Belegen und Rechnungen',
+    'Neues Modul <b>Unternehmerlohn</b>: zeigt, wie viel du dir nach Steuerrücklage entnehmen kannst, und bucht die Entnahme'
+  ]],
   ['2.3.0', 13, '05.11.2026', [
     'Neues Modul <b>Dokumente</b>: Rechnung, Angebot, Lieferschein und Gutschrift als PDF',
     'Fortlaufende Nummern (z. B. RE-2026-0001), auch über mehrere Geräte',
