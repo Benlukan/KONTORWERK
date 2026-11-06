@@ -1,5 +1,13 @@
 # Changelog
 
+## v2.5.1 (Build 16) – 06.11.2026
+- **Behoben:** Auf älteren Android-Geräten (z. B. Tablet mit Android 7.1.1) ließ sich ein Backup vom Handy nicht auswählen. Der Dateifilter `application/json` wird an den Android-Auswahldialog weitergegeben; ältere Android-Versionen kennen den Dateityp von `.json` nicht und grauen die Datei aus. Auf Android wird der Filter für Backups und CSV-Importe (Bankabgleich, Etsy) jetzt beim Öffnen entfernt; geprüft wird stattdessen der Inhalt. Foto- und PDF-Auswahl bleiben gefiltert.
+- Backup wiederherstellen
+  - Lesefehler werden gemeldet (vorher passierte nichts)
+  - Abgeschnittene Datei (unvollständig übertragen) und falsche Datei mit klarer Meldung
+  - Bestätigung zeigt Datum und App-Version des Backups; Warnung, wenn es aus einer neueren Version stammt und Tabellen enthält, die das Gerät noch nicht kennt
+  - Schlägt das Speichern fehl (z. B. Speicher voll), erscheint eine Fehlermeldung statt „wiederhergestellt“
+
 ## v2.5.0 (Build 15) – 06.11.2026
 - **Modul E-Commerce (Etsy)** (Phase 4, CSV-Import; die API-Anbindung folgt als 4.1)
   - Mehrere Shops mit Art „Handgemacht / mit Lager“ oder „Digital“ (Einstellungen → E-Commerce); Auswertungen je Shop oder gesamt

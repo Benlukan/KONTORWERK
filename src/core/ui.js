@@ -42,4 +42,10 @@ export function confirmBox(title, text, okLabel, danger) {
 
 export function initUi() {
   $('#mClose').onclick = closeModal;
+  // Ältere Android-Versionen kennen den Dateityp von .json/.csv nicht und graue solche Dateien im
+  // Auswahldialog aus. Auf Android deshalb jede Datei zulassen (außer Fotos/PDF) – geprüft wird der Inhalt.
+  if (/Android/i.test(navigator.userAgent)) document.addEventListener('click', e => {
+    const t = e.target;
+    if (t && t.tagName === 'INPUT' && t.type === 'file' && t.hasAttribute('accept') && !/image|pdf/.test(t.getAttribute('accept'))) t.removeAttribute('accept');
+  }, true);
 }

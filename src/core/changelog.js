@@ -1,5 +1,11 @@
 /* „Was ist neu?“ – in der App angezeigt (ausführlich: CHANGELOG.md) */
 export const CHANGELOG = [
+  ['2.5.1', 16, '06.11.2026', [
+    'Behoben: Ältere Tablets (z. B. Android 7) konnten Backups vom Handy nicht auswählen – die Datei war im Auswahldialog ausgegraut',
+    'Gilt genauso für Kontoauszüge und Etsy-Dateien (CSV)',
+    'Backup wiederherstellen: verständliche Meldung bei unvollständiger oder falscher Datei und bei vollem Speicher',
+    'Warnung, wenn das Backup aus einer neueren App-Version stammt als das Gerät'
+  ]],
   ['2.5.0', 15, '06.11.2026', [
     'Neues Modul <b>E-Commerce (Etsy)</b> für einen oder mehrere Shops, z. B. Handgemachtes und digitale Produkte getrennt',
     'Etsy-Dateien einlesen: Bestellungen, bestellte Artikel, Angebote und Monatsabrechnung – alle auf einmal, ohne Doppelte',
